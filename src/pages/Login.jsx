@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Check, ArrowRight, Phone, ShieldCheck } from 'lucide-react';
-import { WhatsAppIcon } from '../components/Icons.jsx';
+import { Mail, Lock, Eye, EyeOff, Check, ArrowRight } from 'lucide-react';
 import { Wordmark } from '../components/Logo.jsx';
-import { PHONE, PHONE_DISPLAY, EMAIL, waLink } from '../components/Contact.js';
 import { useAuth } from '../store/useStore';
 
 const IMG = (id, w = 1400) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${w}`;
@@ -86,28 +84,7 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-8 rounded-xl border border-line bg-surface p-4">
-            <p className="flex items-center gap-2 text-[13px] font-bold text-ink-900">
-              <ShieldCheck size={15} className="text-brand-600" /> Need an account?
-            </p>
-            <p className="mt-1.5 text-[13px] leading-relaxed text-ink-500">
-              Access is set up by our team. Get in touch and we will create your login.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <a href={`tel:${PHONE}`} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-2 text-[12.5px] font-bold text-ink-900 transition hover:border-brand-300 hover:text-brand-700">
-                <Phone size={14} className="text-brand-600" /> {PHONE_DISPLAY}
-              </a>
-              <a href={waLink('Hi! I would like an account for the Holiday Along Hotels website.')} target="_blank" rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-2 text-[12.5px] font-bold text-white transition hover:bg-[#1db954]">
-                <WhatsAppIcon size={14} /> WhatsApp
-              </a>
-              <a href={`mailto:${EMAIL}`} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-2 text-[12.5px] font-bold text-ink-900 transition hover:border-brand-300 hover:text-brand-700">
-                <Mail size={14} className="text-brand-600" /> Email us
-              </a>
-            </div>
-          </div>
-
-          <p className="mt-6 text-[12px] leading-relaxed text-ink-400">
+          <p className="mt-8 text-[12px] leading-relaxed text-ink-400">
             We never take online payments. Your account is only used to show tariffs and handle your enquiries.
           </p>
         </div>
