@@ -5,9 +5,8 @@ import Logo from './Logo.jsx';
 import { WhatsAppIcon } from './Icons.jsx';
 import { FloatingCta } from './CtaBar.jsx';
 import { PHONE, PHONE_DISPLAY, EMAIL, waLink } from './Contact.js';
-import { useEnquiry, useAuth, useAuthModal } from '../store/useStore';
+import { useEnquiry, useAuth } from '../store/useStore';
 import EnquiryModal from './EnquiryModal.jsx';
-import AuthModal from './AuthModal.jsx';
 
 const links = [
   { to: '/', label: 'Home' },
@@ -22,7 +21,6 @@ function Header() {
   const openEnquiry = useEnquiry((s) => s.openEnquiry);
   const user = useAuth((s) => s.user);
   const logout = useAuth((s) => s.logout);
-  const openAuth = useAuthModal((s) => s.openAuth);
   useEffect(() => { setOpen(false); setMenu(false); }, [pathname]);
 
   const initials = (user?.name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
@@ -50,8 +48,7 @@ function Header() {
             className="inline-flex h-10 items-center gap-2 rounded-lg border border-line px-3 text-[14px] font-semibold text-ink-900 transition hover:border-brand-300 hover:text-brand-700">
             <Phone size={15} className="text-brand-600" /> {PHONE_DISPLAY}
           </a>
-          {user ? (
-            <div className="relative">
+          <div className="relative">
               <button onClick={() => setMenu((v) => !v)}
                 className="flex h-10 items-center gap-2 rounded-lg border border-line px-2.5 text-[14px] font-semibold text-ink-900 transition hover:border-brand-300">
                 <span className="grid h-7 w-7 place-items-center rounded-full bg-brand-600 text-[11px] font-bold text-white">{initials}</span>
@@ -73,12 +70,6 @@ function Header() {
                 </>
               )}
             </div>
-          ) : (
-            <button onClick={() => openAuth({ mode: 'login' })}
-              className="inline-flex h-10 items-center gap-2 rounded-lg border border-line px-3.5 text-[14px] font-semibold text-ink-900 transition hover:border-brand-300 hover:text-brand-700">
-              <LogIn size={15} className="text-brand-600" /> Sign in
-            </button>
-          )}
           <button onClick={() => openEnquiry({})} className="btn-accent h-10 !py-0 font-bold"><Send size={15} /> Enquire</button>
         </nav>
 
@@ -102,8 +93,7 @@ function Header() {
             </NavLink>
           ))}
           <div className="mt-2 border-t border-line pt-2">
-            {user ? (
-              <>
+
                 <div className="flex items-center gap-2.5 px-3 py-2.5">
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-600 text-[12px] font-bold text-white">{initials}</span>
                   <div className="min-w-0">
@@ -114,13 +104,6 @@ function Header() {
                 <button onClick={logout} className="flex w-full items-center gap-2.5 rounded-lg px-3 py-3 text-[15px] font-semibold text-ink-700">
                   <LogOut size={16} /> Sign out
                 </button>
-              </>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => openAuth({ mode: 'login' })} className="btn-outline !py-3 justify-center"><LogIn size={16} /> Sign in</button>
-                <button onClick={() => openAuth({ mode: 'signup' })} className="btn-primary !py-3 justify-center"><UserRound size={16} /> Sign up</button>
-              </div>
-            )}
           </div>
           <button onClick={() => openEnquiry({})} className="btn-accent mt-2 w-full !py-3 font-bold"><Send size={16} /> Send an enquiry</button>
         </div>
@@ -205,7 +188,6 @@ function Footer() {
 export default function Layout() {
   const { pathname } = useLocation();
   const open = useEnquiry((s) => s.open);
-  const authOpen = useAuthModal((s) => s.open);
   const refresh = useAuth((s) => s.refresh);
   useEffect(() => { refresh(); }, [refresh]);
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
@@ -216,7 +198,6 @@ export default function Layout() {
       <Footer />
       <FloatingCta />
       {open && <EnquiryModal />}
-      {authOpen && <AuthModal />}
     </div>
   );
 }

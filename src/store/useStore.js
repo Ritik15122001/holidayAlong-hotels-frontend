@@ -73,25 +73,9 @@ const persist = (token, user) => {
   } catch { /* storage unavailable */ }
 };
 
-/** Controls the sign-in / sign-up popup. */
-export const useAuthModal = create((set) => ({
-  open: false,
-  mode: 'login',
-  hotelName: '',
-  openAuth: ({ mode = 'login', hotelName = '' } = {}) => set({ open: true, mode, hotelName }),
-  setMode: (mode) => set({ mode }),
-  closeAuth: () => set({ open: false }),
-}));
-
 export const useAuth = create((set) => ({
   token: getToken(),
   user: readUser(),
-  signup: async (body) => {
-    const { token, user } = await api.signup(body);
-    persist(token, user);
-    set({ token, user });
-    return user;
-  },
   login: async (body) => {
     const { token, user } = await api.login(body);
     persist(token, user);

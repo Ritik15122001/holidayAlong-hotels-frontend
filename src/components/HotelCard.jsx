@@ -1,19 +1,16 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Utensils, BedDouble, ShieldCheck, Phone, Lock } from 'lucide-react';
+import { MapPin, Utensils, BedDouble, ShieldCheck, Phone } from 'lucide-react';
 import { WhatsAppIcon } from './Icons.jsx';
 import { PHONE, waHotel } from './Contact.js';
 import Stars from './Stars.jsx';
 import { money } from '../api';
-import { useEnquiry, useAuth, useAuthModal } from '../store/useStore';
+import { useEnquiry } from '../store/useStore';
 
 const ratingWord = (r) => (r >= 4.7 ? 'Exceptional' : r >= 4.4 ? 'Excellent' : r >= 4 ? 'Very good' : 'Good');
 const MEAL_LABEL = { EP: 'Room only', CP: 'With breakfast', MAP: 'Breakfast + 1 meal' };
 
 export default function HotelCard({ hotel, horizontal = false }) {
   const openEnquiry = useEnquiry((s) => s.openEnquiry);
-  const signedIn = useAuth((s) => !!s.token);
-  const openAuth = useAuthModal((s) => s.openAuth);
-  const gate = (e) => { if (!signedIn) { e.preventDefault(); openAuth({ mode: 'login', hotelName: hotel.name }); } };
   const enquire = () => openEnquiry({ hotelId: hotel._id, hotelName: hotel.name, roomType: hotel.topRoomType, mealPlan: hotel.topMealPlan });
 
   return (
@@ -63,9 +60,7 @@ export default function HotelCard({ hotel, horizontal = false }) {
             <p className="text-[11px] text-ink-400">per night · double · excl. taxes</p>
           </div>
           <div className="flex items-center gap-1.5">
-            <Link to={`/hotels/${hotel._id}`} onClick={gate} className="btn-outline !px-3 !py-2.5 !text-[13px]">
-              {signedIn ? 'Details' : <><Lock size={13} /> Details</>}
-            </Link>
+            <Link to={`/hotels/${hotel._id}`} className="btn-outline !px-3 !py-2.5 !text-[13px]">Details</Link>
             <a href={waHotel(hotel)} target="_blank" rel="noreferrer" title="Enquire on WhatsApp"
               className="grid h-[38px] w-[38px] place-items-center rounded-lg bg-[#25D366] text-white transition hover:bg-[#1db954]">
               <WhatsAppIcon size={18} />

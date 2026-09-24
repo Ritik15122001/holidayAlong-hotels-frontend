@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './index.css';
 import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
@@ -10,7 +10,7 @@ const Hotels = lazy(() => import('./pages/Hotels.jsx'));
 const HotelDetails = lazy(() => import('./pages/HotelDetails.jsx'));
 const EnquirySuccess = lazy(() => import('./pages/EnquirySuccess.jsx'));
 const About = lazy(() => import('./pages/About.jsx'));
-const Account = lazy(() => import('./pages/Account.jsx'));
+const Login = lazy(() => import('./pages/Login.jsx'));
 
 const Loading = () => (
   <div className="flex min-h-[60vh] items-center justify-center">
@@ -22,15 +22,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout />}>
+        <Route path="/login" element={<Suspense fallback={<Loading />}><Login /></Suspense>} />
+        <Route element={<RequireAuth><Layout /></RequireAuth>}>
           <Route path="/" element={<Home />} />
           <Route path="/hotels" element={<Suspense fallback={<Loading />}><Hotels /></Suspense>} />
-          <Route path="/hotels/:id" element={<RequireAuth><Suspense fallback={<Loading />}><HotelDetails /></Suspense></RequireAuth>} />
-          <Route path="/login" element={<Suspense fallback={<Loading />}><Account mode="login" /></Suspense>} />
-          <Route path="/signup" element={<Suspense fallback={<Loading />}><Account mode="signup" /></Suspense>} />
+          <Route path="/hotels/:id" element={<Suspense fallback={<Loading />}><HotelDetails /></Suspense>} />
           <Route path="/enquiry-success" element={<Suspense fallback={<Loading />}><EnquirySuccess /></Suspense>} />
           <Route path="/about" element={<Suspense fallback={<Loading />}><About /></Suspense>} />
-          <Route path="*" element={<Loading />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

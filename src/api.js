@@ -31,7 +31,6 @@ export const api = {
   mealPlans: () => req('/meal-plans'),
   destinations: () => req('/destinations'),
   createLead: (body) => req('/leads', { method: 'POST', body }),
-  signup: (body) => req('/auth/signup', { method: 'POST', body }),
   login: (body) => req('/auth/login', { method: 'POST', body }),
   me: () => req('/auth/me'),
 };
