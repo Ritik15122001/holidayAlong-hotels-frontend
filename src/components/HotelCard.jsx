@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Utensils, BedDouble, ShieldCheck, Phone } from 'lucide-react';
-import { WhatsAppIcon } from './Icons.jsx';
-import { PHONE, waHotel } from './Contact.js';
+import { MapPin, Utensils, BedDouble, ShieldCheck } from 'lucide-react';
 import Stars from './Stars.jsx';
 import { money } from '../api';
 import { useEnquiry } from '../store/useStore';
@@ -61,14 +59,6 @@ export default function HotelCard({ hotel, horizontal = false }) {
           </div>
           <div className="flex items-center gap-1.5">
             <Link to={`/hotels/${hotel._id}`} className="btn-outline !px-3 !py-2.5 !text-[13px]">Details</Link>
-            <a href={waHotel(hotel)} target="_blank" rel="noreferrer" title="Book on WhatsApp"
-              className="grid h-[38px] w-[38px] place-items-center rounded-lg bg-[#25D366] text-white transition hover:bg-[#1db954]">
-              <WhatsAppIcon size={18} />
-            </a>
-            <a href={`tel:${PHONE}`} title="Call us"
-              className="grid h-[38px] w-[38px] place-items-center rounded-lg border border-line text-brand-700 transition hover:border-brand-300 hover:bg-brand-50">
-              <Phone size={16} />
-            </a>
             <button onClick={enquire} className="btn-accent !px-3 !py-2.5 !text-[13px]">Book now</button>
           </div>
         </div>
