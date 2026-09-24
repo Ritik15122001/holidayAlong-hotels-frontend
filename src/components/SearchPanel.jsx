@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, CalendarDays, Users, ChevronDown } from 'lucide-react';
 import { useSearch } from '../store/useStore';
 import { api } from '../api';
+import Autocomplete from './Autocomplete.jsx';
+import { placeOptions } from '../lib/places.js';
 
 export default function SearchPanel() {
   const { filters, setFilter } = useSearch();
   const navigate = useNavigate();
   const [guestsOpen, setGuestsOpen] = useState(false);
   const [cities, setCities] = useState([]);
-  useEffect(() => { api.cities().then(setCities).catch(() => {}); }, []);
+  useEffect(() => { placeOptions().then(setCities); }, []);
 
   const submit = (e) => { e.preventDefault(); navigate('/hotels'); };
 
@@ -19,11 +21,13 @@ export default function SearchPanel() {
     <div className="rounded-2xl border border-white/60 bg-white p-2.5 shadow-panel sm:p-3">
       <form onSubmit={submit} className="grid grid-cols-2 gap-2 lg:grid-cols-[1.5fr_1fr_1fr_1.3fr_auto]">
         <Field icon={MapPin} label="Destination" className="col-span-2 lg:col-span-1">
-          <select className="w-full cursor-pointer bg-transparent text-[15px] font-semibold text-ink-900 outline-none"
-            value={filters.q} onChange={(e) => setFilter({ q: e.target.value })}>
-            <option value="">All destinations</option>
-            {cities.map((c) => <option key={c._id} value={c.name}>{c.name}</option>)}
-          </select>
+          <Autocomplete
+            value={filters.q}
+            onChange={(v) => setFilter({ q: v })}
+            options={cities}
+            placeholder="City, area or hotel"
+            inputClassName="w-full bg-transparent text-[15px] font-semibold text-ink-900 outline-none placeholder:font-normal placeholder:text-ink-400"
+          />
         </Field>
 
         <Field icon={CalendarDays} label="Check-in">

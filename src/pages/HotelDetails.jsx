@@ -12,13 +12,11 @@ import HotelCard from '../components/HotelCard.jsx';
 import { api, money } from '../api';
 import CtaBar from '../components/CtaBar.jsx';
 import { WhatsAppIcon } from '../components/Icons.jsx';
+import { iconFor } from '../lib/icons.js';
 import { PHONE, PHONE_DISPLAY, EMAIL, waHotel } from '../components/Contact.js';
 import { useEnquiry } from '../store/useStore';
 
-const AMENITY_ICON = {
-  'WiFi': Wifi, 'Swimming Pool': Waves, 'Restaurant': UtensilsCrossed, 'Parking': Car,
-  'Room Service': ConciergeBell, 'Air Conditioning': Snowflake, 'Gym': Dumbbell, 'Spa': Flower2,
-};
+/** Icon per amenity comes from the amenity master; falls back to a generic one. */
 
 const MEAL_INFO = {
   EP: { name: 'European Plan', desc: 'Room only. Meals are charged separately at the hotel.', includes: ['Room stay', 'Taxes as applicable'] },
@@ -54,6 +52,7 @@ export default function HotelDetails() {
   const [hotel, setHotel] = useState(null);
   const [prices, setPrices] = useState([]);
   const [similar, setSimilar] = useState([]);
+  const [amenityIcons, setAmenityIcons] = useState({});
   const [error, setError] = useState('');
   const [lightbox, setLightbox] = useState(-1);
   const [faq, setFaq] = useState(0);
@@ -282,7 +281,7 @@ export default function HotelDetails() {
             <Block id="amenities" title="Amenities & facilities" sub="Facilities confirmed with the property at the time of listing.">
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {hotel.amenities.map((a) => {
-                  const Icon = AMENITY_ICON[a] || ConciergeBell;
+                  const Icon = iconFor(amenityIcons[a]);
                   return (
                     <div key={a} className="flex items-center gap-2.5 rounded-lg border border-line px-3 py-2.5 text-[13px] font-semibold text-ink-700">
                       <Icon size={16} className="shrink-0 text-brand-600" /> {a}

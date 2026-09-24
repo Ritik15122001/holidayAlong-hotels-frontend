@@ -1,11 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { RotateCcw, Search } from 'lucide-react';
 import { useSearch, useMasters } from '../store/useStore';
+import Autocomplete from './Autocomplete.jsx';
+import { placeOptions } from '../lib/places.js';
 
 export default function Filters() {
   const { filters, setFilter, toggleArr, clearFilters } = useSearch();
   const { roomTypes, mealPlans, load } = useMasters();
-  useEffect(() => { load(); }, [load]);
+  const [places, setPlaces] = useState([]);
+  useEffect(() => { load(); placeOptions().then(setPlaces); }, [load]);
 
   return (
     <div className="divide-y divide-line">
@@ -17,10 +20,13 @@ export default function Filters() {
       </div>
 
       <Group title="Search by location">
-        <div className="relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
-          <input className="field !pl-9" placeholder="City, area or hotel" value={filters.q} onChange={(e) => setFilter({ q: e.target.value })} />
-        </div>
+        <Autocomplete
+          value={filters.q}
+          onChange={(v) => setFilter({ q: v })}
+          options={places}
+          icon={Search}
+          placeholder="City, area or hotel"
+        />
       </Group>
 
       <Group title="Star category">

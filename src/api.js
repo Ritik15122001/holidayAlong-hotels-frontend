@@ -33,6 +33,7 @@ export const api = {
   cities: () => req('/cities'),
   brochures: () => req('/brochures'),
   formats: () => req('/formats'),
+  amenities: () => req('/amenities'),
   vendors: (type) => req('/vendors' + (type ? `?type=${type}` : '')),
   vendorHotels: (id) => req(`/vendors/${id}/hotels`),
   locations: (city) => req('/locations' + (city ? `?city=${city}` : '')),
