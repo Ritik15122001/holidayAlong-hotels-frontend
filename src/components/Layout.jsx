@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Mail, MapPin, Send, LogIn, LogOut, UserRound } from 'lucide-react';
+import { Menu, X, Send, LogIn, LogOut, UserRound } from 'lucide-react';
 import Logo from './Logo.jsx';
-import { WhatsAppIcon } from './Icons.jsx';
 import { FloatingCta } from './CtaBar.jsx';
-import { PHONE, PHONE_DISPLAY, EMAIL, waLink } from './Contact.js';
 import { useEnquiry, useAuth } from '../store/useStore';
 import BookingModal from './BookingModal.jsx';
 
@@ -42,14 +40,6 @@ function Header() {
             </NavLink>
           ))}
           <span className="mx-2 h-6 w-px bg-line" />
-          <a href={waLink()} target="_blank" rel="noreferrer" title="Chat on WhatsApp"
-            className="grid h-10 w-10 place-items-center rounded-lg bg-[#25D366] text-white transition hover:bg-[#1db954]">
-            <WhatsAppIcon size={19} />
-          </a>
-          <a href={`tel:${PHONE}`}
-            className="inline-flex h-10 items-center gap-2 rounded-lg border border-line px-3 text-[14px] font-semibold text-ink-900 transition hover:border-brand-300 hover:text-brand-700">
-            <Phone size={15} className="text-brand-600" /> {PHONE_DISPLAY}
-          </a>
           <div className="relative">
               <button onClick={() => setMenu((v) => !v)}
                 className="flex h-10 items-center gap-2 rounded-lg border border-line px-2.5 text-[14px] font-semibold text-ink-900 transition hover:border-brand-300">
@@ -76,10 +66,6 @@ function Header() {
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <a href={waLink()} target="_blank" rel="noreferrer" aria-label="WhatsApp"
-            className="grid h-10 w-10 place-items-center rounded-lg bg-[#25D366] text-white"><WhatsAppIcon size={18} /></a>
-          <a href={`tel:${PHONE}`} aria-label="Call"
-            className="grid h-10 w-10 place-items-center rounded-lg border border-line text-brand-700"><Phone size={17} /></a>
           <button onClick={() => setOpen(!open)} aria-label="Menu" className="grid h-10 w-10 place-items-center rounded-lg border border-line text-ink-700">
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -124,7 +110,7 @@ function Footer() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink-900/85 via-ink-900/95 to-ink-900" />
 
       <div className="relative">
-        <div className="container-x grid gap-10 py-14 lg:grid-cols-[1.4fr_0.8fr_1fr]">
+        <div className="container-x grid gap-10 py-14 lg:grid-cols-[1.6fr_1fr]">
           <div>
             <Logo onDark />
             <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed text-white/60">
@@ -139,14 +125,6 @@ function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-accent-500">Contact</h4>
-            <ul className="space-y-3 text-[14px] text-white/65">
-              <li><a href={`tel:${PHONE}`} className="flex items-start gap-2.5 transition hover:text-white"><Phone size={16} className="mt-0.5 shrink-0 text-brand-300" /> {PHONE_DISPLAY}</a></li>
-              <li><a href={`mailto:${EMAIL}`} className="flex items-start gap-2.5 break-all transition hover:text-white"><Mail size={16} className="mt-0.5 shrink-0 text-brand-300" /> {EMAIL}</a></li>
-              <li className="flex items-start gap-2.5"><MapPin size={16} className="mt-0.5 shrink-0 text-brand-300" /> 12 Harbour Lane, Mumbai 400001</li>
-            </ul>
-          </div>
         </div>
 
         <div className="container-x flex flex-col items-center justify-between gap-2 border-t border-white/10 py-5 text-[12px] text-white/45 sm:flex-row">
