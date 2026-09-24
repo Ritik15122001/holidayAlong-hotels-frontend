@@ -11,7 +11,9 @@ import BookingModal from './BookingModal.jsx';
 const links = [
   { to: '/', label: 'Home' },
   { to: '/hotels', label: 'Hotels' },
-  { to: '/about', label: 'About & Contact' },
+  { to: '/packages', label: 'Packages' },
+  { to: '/formats', label: 'Formats & Scripts' },
+  { to: '/vendors', label: 'Vendors' },
 ];
 
 function Header() {

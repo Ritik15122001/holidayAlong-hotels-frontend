@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, CalendarDays, Users, Wallet, ChevronDown, Tag, BedDouble } from 'lucide-react';
+import { Search, MapPin, CalendarDays, Users, ChevronDown } from 'lucide-react';
 import { useSearch } from '../store/useStore';
+import { api } from '../api';
 
 export default function SearchPanel() {
   const { filters, setFilter } = useSearch();
   const navigate = useNavigate();
   const [guestsOpen, setGuestsOpen] = useState(false);
-  const [tab, setTab] = useState('hotels');
+  const [cities, setCities] = useState([]);
+  useEffect(() => { api.cities().then(setCities).catch(() => {}); }, []);
 
   const submit = (e) => { e.preventDefault(); navigate('/hotels'); };
 
@@ -15,21 +17,13 @@ export default function SearchPanel() {
 
   return (
     <div className="rounded-2xl border border-white/60 bg-white p-2.5 shadow-panel sm:p-3">
-      <div className="mb-2.5 flex gap-1.5">
-        {[['hotels', 'Hotels', BedDouble], ['offers', 'Offers & Deals', Tag]].map(([key, label, Icon]) => (
-          <button key={key} type="button"
-            onClick={() => { setTab(key); setFilter({ sort: key === 'offers' ? 'price_asc' : '' }); }}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[13px] font-bold transition ${
-              tab === key ? 'bg-brand-50 text-brand-700 ring-1 ring-brand-200' : 'text-ink-500 hover:bg-surface'}`}>
-            <Icon size={15} /> {label}
-          </button>
-        ))}
-      </div>
-
-      <form onSubmit={submit} className="grid grid-cols-2 gap-2 lg:grid-cols-[1.5fr_1fr_1fr_1.2fr_0.8fr_auto]">
+      <form onSubmit={submit} className="grid grid-cols-2 gap-2 lg:grid-cols-[1.5fr_1fr_1fr_1.3fr_auto]">
         <Field icon={MapPin} label="Destination" className="col-span-2 lg:col-span-1">
-          <input className="w-full bg-transparent text-[15px] font-semibold text-ink-900 outline-none placeholder:font-normal placeholder:text-ink-400"
-            placeholder="City, hotel or area" value={filters.q} onChange={(e) => setFilter({ q: e.target.value })} />
+          <select className="w-full cursor-pointer bg-transparent text-[15px] font-semibold text-ink-900 outline-none"
+            value={filters.q} onChange={(e) => setFilter({ q: e.target.value })}>
+            <option value="">All destinations</option>
+            {cities.map((c) => <option key={c._id} value={c.name}>{c.name}</option>)}
+          </select>
         </Field>
 
         <Field icon={CalendarDays} label="Check-in">
@@ -68,11 +62,6 @@ export default function SearchPanel() {
             </>
           )}
         </div>
-
-        <Field icon={Wallet} label="Budget">
-          <input type="number" min="0" step="500" className="w-full bg-transparent text-[14px] font-semibold text-ink-900 outline-none placeholder:font-normal placeholder:text-ink-400 sm:text-[15px]"
-            placeholder="Any" value={filters.maxPrice} onChange={(e) => setFilter({ maxPrice: e.target.value })} />
-        </Field>
 
         <button type="submit"
           className="btn-accent col-span-2 !rounded-xl px-7 py-3.5 text-[15px] font-bold uppercase tracking-wide lg:col-span-1 lg:py-0">

@@ -9,7 +9,9 @@ import RequireAuth from './components/RequireAuth.jsx';
 const Hotels = lazy(() => import('./pages/Hotels.jsx'));
 const HotelDetails = lazy(() => import('./pages/HotelDetails.jsx'));
 const EnquirySuccess = lazy(() => import('./pages/EnquirySuccess.jsx'));
-const About = lazy(() => import('./pages/About.jsx'));
+const Packages = lazy(() => import('./pages/Packages.jsx'));
+const Formats = lazy(() => import('./pages/Formats.jsx'));
+const VendorsPage = lazy(() => import('./pages/Vendors.jsx'));
 const Login = lazy(() => import('./pages/Login.jsx'));
 
 const Loading = () => (
@@ -28,7 +30,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/hotels" element={<Suspense fallback={<Loading />}><Hotels /></Suspense>} />
           <Route path="/hotels/:id" element={<Suspense fallback={<Loading />}><HotelDetails /></Suspense>} />
           <Route path="/enquiry-success" element={<Suspense fallback={<Loading />}><EnquirySuccess /></Suspense>} />
-          <Route path="/about" element={<Suspense fallback={<Loading />}><About /></Suspense>} />
+          <Route path="/packages" element={<Suspense fallback={<Loading />}><Packages /></Suspense>} />
+          <Route path="/formats" element={<Suspense fallback={<Loading />}><Formats /></Suspense>} />
+          <Route path="/vendors" element={<Suspense fallback={<Loading />}><VendorsPage /></Suspense>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
