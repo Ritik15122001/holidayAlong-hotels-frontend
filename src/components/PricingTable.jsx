@@ -1,11 +1,19 @@
 import { useMemo, useState } from 'react';
-import { ChevronDown, CalendarRange, Info } from 'lucide-react';
+import { ChevronDown, CalendarRange, Info, ArrowUpDown, X } from 'lucide-react';
 import { money, fmtDate } from '../api';
 import { useEnquiry } from '../store/useStore';
 
 const COLS = [
   ['singlePrice', 'Single'], ['doublePrice', 'Double'], ['triplePrice', 'Triple'], ['quadPrice', 'Quad'],
-  ['cnbPrice', 'CNB'], ['cwbPrice', 'CWB'], ['adultExtraBedPrice', 'Adult EB'], ['childExtraBedPrice', 'Child EB'],
+  ['cnbPrice', 'CNB'], ['cwbPrice', 'CWB'], ['adultExtraBedPrice', 'Adult EB'],
+];
+
+const SORTS = [
+  ['default', 'Room type'],
+  ['price_asc', 'Price: low to high'],
+  ['price_desc', 'Price: high to low'],
+  ['meal', 'Meal plan'],
+  ['validity', 'Validity date'],
 ];
 
 const mealColor = (code) => ({
@@ -18,6 +26,9 @@ export default function PricingTable({ prices, hotel }) {
   const openEnquiry = useEnquiry((s) => s.openEnquiry);
   const [openRow, setOpenRow] = useState(null);
   const [period, setPeriod] = useState('all');
+  const [roomType, setRoomType] = useState('');
+  const [mealPlan, setMealPlan] = useState('');
+  const [sort, setSort] = useState('default');
 
   const periods = useMemo(() => {
     const seen = new Map();
@@ -28,7 +39,32 @@ export default function PricingTable({ prices, hotel }) {
     return [...seen.values()].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   }, [prices]);
 
-  const rows = period === 'all' ? prices : prices.filter((p) => `${p.startDate}|${p.endDate}` === period);
+  const roomTypes = useMemo(
+    () => [...new Set(prices.map((p) => p.roomTypeId?.name).filter(Boolean))].sort(),
+    [prices]);
+  const mealPlans = useMemo(
+    () => [...new Set(prices.map((p) => p.mealPlanId?.code).filter(Boolean))].sort(),
+    [prices]);
+
+  const rows = useMemo(() => {
+    const list = prices.filter((p) =>
+      (period === 'all' || `${p.startDate}|${p.endDate}` === period) &&
+      (!roomType || p.roomTypeId?.name === roomType) &&
+      (!mealPlan || p.mealPlanId?.code === mealPlan));
+
+    const order = [...list];
+    if (sort === 'price_asc') order.sort((a, b) => (a.doublePrice || 0) - (b.doublePrice || 0));
+    else if (sort === 'price_desc') order.sort((a, b) => (b.doublePrice || 0) - (a.doublePrice || 0));
+    else if (sort === 'meal') order.sort((a, b) => String(a.mealPlanId?.code).localeCompare(String(b.mealPlanId?.code)));
+    else if (sort === 'validity') order.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+    else order.sort((a, b) =>
+      String(a.roomTypeId?.name).localeCompare(String(b.roomTypeId?.name)) ||
+      (a.doublePrice || 0) - (b.doublePrice || 0));
+    return order;
+  }, [prices, period, roomType, mealPlan, sort]);
+
+  const filtered = Boolean(roomType || mealPlan || period !== 'all' || sort !== 'default');
+  const clearAll = () => { setRoomType(''); setMealPlan(''); setPeriod('all'); setSort('default'); };
 
   if (!prices.length) {
     return (
@@ -40,6 +76,35 @@ export default function PricingTable({ prices, hotel }) {
 
   return (
     <div>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        {roomTypes.length > 1 && (
+          <select value={roomType} onChange={(e) => setRoomType(e.target.value)}
+            className="rounded-lg border border-line bg-white px-3 py-2 text-[12.5px] font-semibold text-ink-700 outline-none transition hover:border-brand-300">
+            <option value="">All room types</option>
+            {roomTypes.map((r) => <option key={r} value={r}>{r}</option>)}
+          </select>
+        )}
+        {mealPlans.length > 1 && (
+          <select value={mealPlan} onChange={(e) => setMealPlan(e.target.value)}
+            className="rounded-lg border border-line bg-white px-3 py-2 text-[12.5px] font-semibold text-ink-700 outline-none transition hover:border-brand-300">
+            <option value="">All meal plans</option>
+            {mealPlans.map((m) => <option key={m} value={m}>{m}</option>)}
+          </select>
+        )}
+        <label className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-2 text-[12.5px] font-semibold text-ink-700">
+          <ArrowUpDown size={13} className="text-brand-600" />
+          <select value={sort} onChange={(e) => setSort(e.target.value)} className="bg-transparent outline-none">
+            {SORTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          </select>
+        </label>
+        <span className="text-[12.5px] text-ink-500">{rows.length} of {prices.length} rate{prices.length === 1 ? '' : 's'}</span>
+        {filtered && (
+          <button onClick={clearAll} className="inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-[12.5px] font-bold text-brand-700 hover:underline">
+            <X size={13} /> Clear
+          </button>
+        )}
+      </div>
+
       {periods.length > 1 && (
         <div className="no-scrollbar mb-3.5 flex gap-2 overflow-x-auto pb-1">
           <Chip active={period === 'all'} onClick={() => setPeriod('all')}>All periods</Chip>
@@ -51,6 +116,12 @@ export default function PricingTable({ prices, hotel }) {
         </div>
       )}
 
+      {rows.length === 0 ? (
+        <div className="card flex flex-wrap items-center gap-3 p-5 text-[14px] text-ink-500">
+          <Info size={18} className="text-brand-600" /> No rates match these filters.
+          <button onClick={clearAll} className="font-bold text-brand-700 hover:underline">Clear filters</button>
+        </div>
+      ) : (<>
       {/* Desktop table */}
       <div className="card hidden overflow-hidden md:block">
         <div className="max-h-[540px] overflow-auto">
@@ -126,6 +197,8 @@ export default function PricingTable({ prices, hotel }) {
           );
         })}
       </div>
+
+      </>)}
 
       <p className="mt-3 flex items-start gap-2 text-[12px] leading-relaxed text-ink-400">
         <Info size={14} className="mt-0.5 shrink-0 text-brand-600" />
