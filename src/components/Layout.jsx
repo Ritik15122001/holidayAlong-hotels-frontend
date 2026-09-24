@@ -6,7 +6,7 @@ import { WhatsAppIcon } from './Icons.jsx';
 import { FloatingCta } from './CtaBar.jsx';
 import { PHONE, PHONE_DISPLAY, EMAIL, waLink } from './Contact.js';
 import { useEnquiry, useAuth } from '../store/useStore';
-import EnquiryModal from './EnquiryModal.jsx';
+import BookingModal from './BookingModal.jsx';
 
 const links = [
   { to: '/', label: 'Home' },
@@ -70,7 +70,7 @@ function Header() {
                 </>
               )}
             </div>
-          <button onClick={() => openEnquiry({})} className="btn-accent h-10 !py-0 font-bold"><Send size={15} /> Enquire</button>
+          <button onClick={() => openEnquiry({})} className="btn-accent h-10 !py-0 font-bold"><Send size={15} />Book now</button>
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -105,7 +105,7 @@ function Header() {
                   <LogOut size={16} /> Sign out
                 </button>
           </div>
-          <button onClick={() => openEnquiry({})} className="btn-accent mt-2 w-full !py-3 font-bold"><Send size={16} /> Send an enquiry</button>
+          <button onClick={() => openEnquiry({})} className="btn-accent mt-2 w-full !py-3 font-bold"><Send size={16} /> Book now</button>
         </div>
       )}
     </header>
@@ -178,7 +178,7 @@ function Footer() {
 
         <div className="container-x flex flex-col items-center justify-between gap-2 border-t border-white/10 py-5 text-[12px] text-white/45 sm:flex-row">
           <p>© {new Date().getFullYear()} Holiday Along Hotels</p>
-          <p>Enquiry-based hotel discovery — no online payments</p>
+          <p>Booking requests handled by a real team — no online payments</p>
         </div>
       </div>
     </footer>
@@ -197,7 +197,7 @@ export default function Layout() {
       <main className="flex-1"><Outlet /></main>
       <Footer />
       <FloatingCta />
-      {open && <EnquiryModal />}
+      {open && <BookingModal />}
     </div>
   );
 }

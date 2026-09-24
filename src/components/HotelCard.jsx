@@ -61,7 +61,7 @@ export default function HotelCard({ hotel, horizontal = false }) {
           </div>
           <div className="flex items-center gap-1.5">
             <Link to={`/hotels/${hotel._id}`} className="btn-outline !px-3 !py-2.5 !text-[13px]">Details</Link>
-            <a href={waHotel(hotel)} target="_blank" rel="noreferrer" title="Enquire on WhatsApp"
+            <a href={waHotel(hotel)} target="_blank" rel="noreferrer" title="Book on WhatsApp"
               className="grid h-[38px] w-[38px] place-items-center rounded-lg bg-[#25D366] text-white transition hover:bg-[#1db954]">
               <WhatsAppIcon size={18} />
             </a>
@@ -69,7 +69,7 @@ export default function HotelCard({ hotel, horizontal = false }) {
               className="grid h-[38px] w-[38px] place-items-center rounded-lg border border-line text-brand-700 transition hover:border-brand-300 hover:bg-brand-50">
               <Phone size={16} />
             </a>
-            <button onClick={enquire} className="btn-accent !px-3 !py-2.5 !text-[13px]">Enquire</button>
+            <button onClick={enquire} className="btn-accent !px-3 !py-2.5 !text-[13px]">Book now</button>
           </div>
         </div>
       </div>

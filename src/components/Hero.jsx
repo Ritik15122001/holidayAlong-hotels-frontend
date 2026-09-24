@@ -8,7 +8,7 @@ const SLIDES = [
   { image: P(2506988), tag: 'Beach resorts · Goa',        title: 'Luxury stays across India, at the right tariff', sub: 'Verified five-star resorts with transparent room and meal-plan rates.' },
   { image: P(4502973), tag: 'Heritage palaces · Udaipur', title: 'Palace hotels, honest pricing',                   sub: 'Lake-facing suites and courtyard pools, contracted directly by our desk.' },
   { image: P(1268871), tag: 'Infinity pools · Goa',       title: 'Sea-facing suites without the guesswork',         sub: 'Every property inspected by us before it reaches this page.' },
-  { image: P(2869215), tag: 'City hotels · Delhi',        title: 'Grand hotels, one simple enquiry',                sub: 'Tell us your dates — we come back with availability and final rates.' },
+  { image: P(2869215), tag: 'City hotels · Delhi',        title: 'Grand hotels, one simple booking',                sub: 'Tell us your dates — we come back with availability and final rates.' },
 ];
 
 export default function Hero() {

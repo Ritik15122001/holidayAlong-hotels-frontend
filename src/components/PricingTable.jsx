@@ -33,7 +33,7 @@ export default function PricingTable({ prices, hotel }) {
   if (!prices.length) {
     return (
       <div className="card flex items-center gap-3 p-5 text-[14px] text-ink-500">
-        <Info size={18} className="text-brand-600" /> Tariffs for this property are available on request — send an enquiry and we'll share the full rate sheet.
+        <Info size={18} className="text-brand-600" /> Tariffs for this property are available on request — book now and we'll share the full rate sheet.
       </div>
     );
   }
@@ -82,7 +82,7 @@ export default function PricingTable({ prices, hotel }) {
                   </td>
                   <td className="px-3 py-3 text-right">
                     <button onClick={() => openEnquiry({ hotelId: hotel._id, hotelName: hotel.name, roomType: p.roomTypeId?.name, mealPlan: p.mealPlanId?.code })}
-                      className="whitespace-nowrap rounded-lg bg-accent-500 px-3 py-1.5 text-[12px] font-bold text-white transition hover:bg-accent-600">Enquire</button>
+                      className="whitespace-nowrap rounded-lg bg-accent-500 px-3 py-1.5 text-[12px] font-bold text-white transition hover:bg-accent-600">Book now</button>
                   </td>
                 </tr>
               ))}
@@ -119,7 +119,7 @@ export default function PricingTable({ prices, hotel }) {
                     ))}
                   </dl>
                   <button onClick={() => openEnquiry({ hotelId: hotel._id, hotelName: hotel.name, roomType: p.roomTypeId?.name, mealPlan: p.mealPlanId?.code })}
-                    className="btn-accent mt-3 w-full !py-2.5">Enquire about this rate</button>
+                    className="btn-accent mt-3 w-full !py-2.5">Book this rate</button>
                 </div>
               )}
             </div>
@@ -129,7 +129,7 @@ export default function PricingTable({ prices, hotel }) {
 
       <p className="mt-3 flex items-start gap-2 text-[12px] leading-relaxed text-ink-400">
         <Info size={14} className="mt-0.5 shrink-0 text-brand-600" />
-        Rates are per room per night in {rows[0]?.currency || 'INR'}, exclusive of taxes. CNB = child no bed, CWB = child with bed, EB = extra bed. Tariffs are indicative and confirmed on enquiry.
+        Rates are per room per night in {rows[0]?.currency || 'INR'}, exclusive of taxes. CNB = child no bed, CWB = child with bed, EB = extra bed. Tariffs are indicative and confirmed on booking.
       </p>
     </div>
   );

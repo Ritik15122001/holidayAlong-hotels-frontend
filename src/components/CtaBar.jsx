@@ -3,7 +3,7 @@ import { WhatsAppIcon } from './Icons.jsx';
 import { PHONE, PHONE_DISPLAY, waLink } from './Contact.js';
 import { useEnquiry } from '../store/useStore';
 
-/** Reusable call / WhatsApp / enquiry action group. */
+/** Reusable call / WhatsApp / booking action group. */
 export default function CtaBar({ variant = 'row', context = {}, waText, className = '', labels = true }) {
   const openEnquiry = useEnquiry((s) => s.openEnquiry);
   const stack = variant === 'stack';
@@ -11,7 +11,7 @@ export default function CtaBar({ variant = 'row', context = {}, waText, classNam
   return (
     <div className={`flex gap-2.5 ${stack ? 'flex-col' : 'flex-wrap items-center'} ${className}`}>
       <button onClick={() => openEnquiry(context)} className={`btn-accent ${stack ? 'w-full !py-3.5' : ''} font-bold`}>
-        <Send size={16} /> Send enquiry
+        <Send size={16} /> Book now
       </button>
       <a href={waLink(waText)} target="_blank" rel="noreferrer"
         className={`btn border border-[#25D366] bg-[#25D366] px-5 py-3 text-sm text-white hover:bg-[#1db954] ${stack ? 'w-full !py-3.5' : ''}`}>

@@ -10,14 +10,14 @@ export default function EnquirySuccess() {
       <div className="container-x flex min-h-[68vh] items-center justify-center py-14">
         <div className="card w-full max-w-lg p-7 text-center sm:p-9">
           <span className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-emerald-50 text-emerald-600"><CheckCircle2 size={34} /></span>
-          <h1 className="text-[24px] font-extrabold text-ink-900 sm:text-[28px]">Thank you{state?.name ? `, ${state.name.split(' ')[0]}` : ''}.</h1>
+          <h1 className="text-[24px] font-extrabold text-ink-900 sm:text-[28px]">Booking request received{state?.name ? `, ${state.name.split(' ')[0]}` : ''}.</h1>
           <p className="mt-2.5 text-[15px] leading-relaxed text-ink-500">
-            Our team will contact you shortly{state?.hotelName ? <> about your stay at <span className="font-semibold text-ink-900">{state.hotelName}</span></> : ''}.
+            Our team will confirm your booking shortly{state?.hotelName ? <> about your stay at <span className="font-semibold text-ink-900">{state.hotelName}</span></> : ''}.
             You'll receive a tailored proposal with availability and final tariffs.
           </p>
           <span className="chip mt-4 !border-emerald-200 !bg-emerald-50 !text-emerald-700"><Clock size={14} /> Typical reply time: under 24 hours</span>
           <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
-            <a href={waLink('Hi! I just sent an enquiry through your website.')} target="_blank" rel="noreferrer"
+            <a href={waLink('Hi! I just made a booking request through your website.')} target="_blank" rel="noreferrer"
               className="btn bg-[#25D366] px-5 py-3 text-sm text-white hover:bg-[#1db954]"><WhatsAppIcon size={17} /> Continue on WhatsApp</a>
             <a href={`tel:${PHONE}`} className="btn-primary"><Phone size={15} /> Call us now</a>
             <Link to="/hotels" className="btn-ghost">Browse more hotels <ArrowRight size={15} /></Link>

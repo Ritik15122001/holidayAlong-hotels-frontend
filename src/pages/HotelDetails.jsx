@@ -143,11 +143,11 @@ export default function HotelDetails() {
   ];
 
   const FAQS = [
-    [`What is the check-in and check-out time at ${hotel.name}?`, `Check-in begins at ${hotel.checkIn || '14:00'} and check-out is until ${hotel.checkOut || '11:00'}. Early check-in and late check-out can be requested in your enquiry and are subject to availability on the day.`],
-    ['Do I have to pay anything on this website?', 'No. Holiday Along Hotels is an enquiry platform — there is no online payment and no card details are collected. You settle directly with the hotel as per the confirmed tariff.'],
-    ['Which meal plans are available?', mealPlans.length ? `This property is loaded on ${mealPlans.join(', ')}. ${mealPlans.map((c) => `${c} = ${MEAL_INFO[c]?.name || c}`).join('; ')}.` : 'Meal plan options are shared on request — tell us your preference in the enquiry form.'],
-    ['Are extra beds available for children?', rooms.some((r) => r.extraBed) ? 'Yes. Adult and child extra-bed rates are listed in the tariff table. Child-no-bed (CNB) and child-with-bed (CWB) rates apply as per the hotel policy.' : 'Extra bed availability varies by room type — mention the number of adults and children in your enquiry and we will confirm.'],
-    ['How soon will I get a reply?', 'Our team replies to every enquiry within 24 hours, usually much sooner on WhatsApp during business hours.'],
+    [`What is the check-in and check-out time at ${hotel.name}?`, `Check-in begins at ${hotel.checkIn || '14:00'} and check-out is until ${hotel.checkOut || '11:00'}. Early check-in and late check-out can be requested when you book and are subject to availability on the day.`],
+    ['Do I have to pay anything on this website?', 'No. There is no online payment and no card details are collected. You settle directly with the hotel as per the confirmed tariff.'],
+    ['Which meal plans are available?', mealPlans.length ? `This property is loaded on ${mealPlans.join(', ')}. ${mealPlans.map((c) => `${c} = ${MEAL_INFO[c]?.name || c}`).join('; ')}.` : 'Meal plan options are shared on request — tell us your preference in the booking form.'],
+    ['Are extra beds available for children?', rooms.some((r) => r.extraBed) ? 'Yes. Adult and child extra-bed rates are listed in the tariff table. Child-no-bed (CNB) and child-with-bed (CWB) rates apply as per the hotel policy.' : 'Extra bed availability varies by room type — mention the number of adults and children when you book and we will confirm.'],
+    ['How soon will I get a reply?', 'Our team replies to every booking request within 24 hours, usually much sooner on WhatsApp during business hours.'],
     ['Is the tariff shown final?', 'Tariffs shown are the latest rates loaded for the listed validity period. Final rates are confirmed against your exact dates, occupancy and meal plan before you commit to anything.'],
   ];
 
@@ -268,7 +268,7 @@ export default function HotelDetails() {
                         <div className="flex items-center gap-2">
                           <a href={waHotel(hotel)} target="_blank" rel="noreferrer" aria-label={`WhatsApp about ${r.name}`} className="grid h-9 w-9 place-items-center rounded-lg bg-[#25D366] text-white"><WhatsAppIcon size={16} /></a>
                           <a href={`tel:${PHONE}`} aria-label="Call us" className="grid h-9 w-9 place-items-center rounded-lg border border-line text-brand-700"><Phone size={16} /></a>
-                          <button onClick={() => enquire({ roomType: r.name, mealPlan: r.plans[0] })} className="btn-accent !px-4 !py-2 !text-[13px]">Enquire</button>
+                          <button onClick={() => enquire({ roomType: r.name, mealPlan: r.plans[0] })} className="btn-accent !px-4 !py-2 !text-[13px]">Book now</button>
                         </div>
                       </div>
                     </div>
@@ -291,7 +291,7 @@ export default function HotelDetails() {
                 })}
               </div>
               <div className="mt-4 rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-ink-700">
-                <span className="font-bold text-ink-900">Need something specific?</span> Airport transfer, early check-in, a connecting room or a celebration set-up — mention it in your enquiry and we will check with the hotel.
+                <span className="font-bold text-ink-900">Need something specific?</span> Airport transfer, early check-in, a connecting room or a celebration set-up — mention it when you book and we will check with the hotel.
               </div>
             </Block>
           )}
@@ -306,7 +306,7 @@ export default function HotelDetails() {
             {cheapest && <p className="mt-0.5 text-[12px] text-ink-500">{cheapest.roomTypeId?.name} · {cheapest.mealPlanId?.code} · double occupancy</p>}
             <CtaBar variant="stack" className="mt-4" context={{ hotelId: hotel._id, hotelName: hotel.name }} waText={waText} />
             <ul className="mt-4 space-y-2 border-t border-line pt-4 text-[13px] text-ink-700">
-              {['No payment online', 'Reply within 24 hours', 'Free to cancel your enquiry'].map((t) => (
+              {['No payment online', 'Reply within 24 hours', 'Free to cancel before we confirm'].map((t) => (
                 <li key={t} className="flex items-center gap-2"><Check size={15} className="shrink-0 text-emerald-600" /> {t}</li>
               ))}
             </ul>
@@ -320,7 +320,7 @@ export default function HotelDetails() {
             <h3 className="flex items-center gap-2 text-[14px] font-extrabold text-ink-900"><Sparkles size={16} className="text-accent-500" /> Why guests pick us</h3>
             <ul className="mt-3 space-y-2.5 text-[13px] text-ink-700">
               {[['Direct hotel tariffs', 'Rates negotiated with the property, not scraped.'],
-                ['One person, start to finish', 'The same stay expert handles your enquiry.'],
+                ['One person, start to finish', 'The same stay expert handles your booking.'],
                 ['Zero obligation', 'Ask as many questions as you like before deciding.']].map(([t, d]) => (
                 <li key={t}>
                   <p className="font-bold text-ink-900">{t}</p>
@@ -374,10 +374,10 @@ export default function HotelDetails() {
                 <span className="text-[12.5px] font-bold text-ink-900">{dist}</span>
               </div>
             ))}
-            {!nearby.length && <p className="text-[13px] text-ink-500">Ask us about nearby attractions and transfers — we will share a full map with your enquiry reply.</p>}
+            {!nearby.length && <p className="text-[13px] text-ink-500">Ask us about nearby attractions and transfers — we will share a full map when we confirm your booking.</p>}
           </div>
           <a href={`https://www.google.com/maps/search/?api=1&query=${mapQ}`} target="_blank" rel="noreferrer" className="btn-outline mt-4 w-full !py-2.5"><Navigation size={15} /> Open in Google Maps</a>
-          <p className="mt-3 flex items-start gap-2 text-[12.5px] text-ink-500"><TrainFront size={14} className="mt-0.5 shrink-0 text-brand-600" /> Need an airport or station pickup? Add it to your enquiry and we will quote the transfer along with the room tariff.</p>
+          <p className="mt-3 flex items-start gap-2 text-[12.5px] text-ink-500"><TrainFront size={14} className="mt-0.5 shrink-0 text-brand-600" /> Need an airport or station pickup? Add it to your booking and we will quote the transfer along with the room tariff.</p>
         </Block>
 
         {/* REVIEWS */}
@@ -468,7 +468,7 @@ export default function HotelDetails() {
           <div className="mb-4 flex items-end justify-between gap-4">
             <div>
               <h2 className="text-[18px] font-extrabold text-ink-900 sm:text-[22px]">You may also like</h2>
-              <p className="text-[13px] text-ink-500">Comparable stays our guests also enquire about.</p>
+              <p className="text-[13px] text-ink-500">Comparable stays our guests also book.</p>
             </div>
             <Link to={`/hotels?city=${encodeURIComponent(hotel.city)}`} className="hidden shrink-0 text-[13px] font-bold text-brand-700 hover:underline sm:block">View all →</Link>
           </div>
@@ -487,7 +487,7 @@ export default function HotelDetails() {
           </div>
           <a href={`tel:${PHONE}`} aria-label="Call us" className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-line text-brand-700"><Phone size={18} /></a>
           <a href={waHotel(hotel)} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-[#25D366] text-white"><WhatsAppIcon size={20} /></a>
-          <button onClick={() => enquire()} className="btn-accent !px-5 !py-3 font-bold uppercase tracking-wide">Enquire</button>
+          <button onClick={() => enquire()} className="btn-accent !px-5 !py-3 font-bold uppercase tracking-wide">Book now</button>
         </div>
       </div>
 

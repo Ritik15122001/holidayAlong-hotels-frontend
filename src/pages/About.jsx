@@ -24,7 +24,7 @@ export default function About() {
     e.preventDefault();
     setSaving(true); setError('');
     try {
-      await api.createLead({ ...form, message: form.message || 'General enquiry from Contact page' });
+      await api.createLead({ ...form, message: form.message || 'General booking request from Contact page' });
       setSent(true);
     } catch (err) { setError(err.message); } finally { setSaving(false); }
   };
@@ -40,7 +40,7 @@ export default function About() {
             A travel desk,<br /> not a booking engine.
           </h1>
           <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed text-white/70">
-            We curate a small collection of hotels and resorts, negotiate transparent room and meal-plan tariffs, and handle every stay personally. You browse, you enquire, we take it from there.
+            We curate a small collection of hotels and resorts, negotiate transparent room and meal-plan tariffs, and handle every stay personally. You browse, you book, we take it from there.
           </p>
           <div className="mt-8 grid max-w-2xl grid-cols-3 gap-3 text-center">
             {[['10+', 'Curated hotels'], ['8', 'Destinations'], ['4.6★', 'Guest rating']].map(([v, l]) => (
@@ -86,11 +86,11 @@ export default function About() {
               We started Holiday Along Hotels because comparing Indian hotels online had become exhausting — inflated strike-through prices, meal plans hidden behind jargon and no one to actually call.
             </p>
             <p className="mt-3 text-[14.5px] leading-relaxed text-ink-500">
-              So we did it the other way round. We contract a small set of properties we would stay in ourselves, publish the real room and meal-plan tariffs on the page, and put a person at the end of every enquiry.
+              So we did it the other way round. We contract a small set of properties we would stay in ourselves, publish the real room and meal-plan tariffs on the page, and put a person at the end of every booking.
             </p>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               {[[BadgeIndianRupee, 'Transparent tariffs', 'Room, meal plan and extra-bed rates published upfront.'],
-                [Headset, 'One point of contact', 'The same stay expert from enquiry to check-in.']].map(([Icon, t, d]) => (
+                [Headset, 'One point of contact', 'The same stay expert from booking to check-in.']].map(([Icon, t, d]) => (
                 <div key={t} className="flex gap-3">
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600"><Icon size={18} /></span>
                   <div>

@@ -9,7 +9,7 @@ const IMG = (id, w = 1400) => `https://images.pexels.com/photos/${id}/pexels-pho
 const PERKS = [
   'Handpicked luxury hotels across India',
   'Full room and meal-plan tariffs, no mark-ups',
-  'One enquiry, a tailored proposal in 24 hours',
+  'One booking request, a tailored proposal in 24 hours',
 ];
 
 export default function Login() {
@@ -50,7 +50,7 @@ export default function Login() {
 
           <h1 className="mt-9 text-[28px] font-extrabold leading-tight text-ink-900 sm:text-[34px]">Sign in</h1>
           <p className="mt-2.5 text-[14.5px] leading-relaxed text-ink-500">
-            Welcome back. Sign in to browse our hotels, see live tariffs and send an enquiry.
+            Welcome back. Sign in to browse our hotels, see live tariffs and book your stay.
           </p>
 
           <form onSubmit={submit} className="mt-7 space-y-4">
@@ -85,7 +85,7 @@ export default function Login() {
           </form>
 
           <p className="mt-8 text-[12px] leading-relaxed text-ink-400">
-            We never take online payments. Your account is only used to show tariffs and handle your enquiries.
+            We never take online payments. Your account is only used to show tariffs and handle your bookings.
           </p>
         </div>
       </div>

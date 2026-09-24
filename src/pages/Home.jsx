@@ -34,7 +34,7 @@ const COLLECTIONS = [
 const STEPS = [
   { icon: Search, title: 'Search a destination', text: 'Pick your city, dates and guests. We show only verified, contracted properties.' },
   { icon: ListChecks, title: 'Compare real tariffs', text: 'See room type, meal plan and occupancy rates side by side — no hidden mark-ups.' },
-  { icon: Send, title: 'Send one enquiry', text: 'Tell us what you need. No payment, no account, no booking commitment.' },
+  { icon: Send, title: 'Book in one step', text: 'Tell us what you need. No payment taken online, no commitment until we confirm.' },
   { icon: FileCheck2, title: 'Get a proposal', text: 'Our travel desk confirms availability and replies with final pricing in 24 hours.' },
 ];
 
@@ -48,18 +48,18 @@ const WHY = [
   { icon: ShieldCheck, title: 'Verified hotels', text: 'Every property is inspected and contracted directly by our team.' },
   { icon: BadgeIndianRupee, title: 'Best available rates', text: 'Transparent room and meal-plan tariffs with no hidden mark-ups.' },
   { icon: Headset, title: 'Personalised assistance', text: 'A real travel desk for occasions, budgets and group stays.' },
-  { icon: MessageSquareQuote, title: 'Easy enquiry', text: 'One enquiry, a tailored proposal back within 24 hours.' },
+  { icon: MessageSquareQuote, title: 'Easy booking', text: 'One booking request, a tailored proposal back within 24 hours.' },
 ];
 
 const REVIEWS = [
   { name: 'Ananya Sharma', city: 'Mumbai', text: 'They found us a sea-facing room in Goa well below what the booking sites were quoting, and answered every question the same day.', stay: 'The Azure Palm Resort' },
-  { name: 'Rahul Verma', city: 'Pune', text: 'We needed four connecting rooms in Udaipur. One enquiry and we had a full tariff sheet with meal plans laid out clearly.', stay: 'Lake Pichola Heritage Palace' },
+  { name: 'Rahul Verma', city: 'Pune', text: 'We needed four connecting rooms in Udaipur. One booking request and we had a full tariff sheet with meal plans laid out clearly.', stay: 'Lake Pichola Heritage Palace' },
   { name: 'Meera Iyer', city: 'Bengaluru', text: 'The pricing table made it obvious what CP and MAP actually cost. No surprises at check-in, which is rare.', stay: 'Rajmahal Heritage Palace' },
 ];
 
 const FAQS = [
-  { q: 'Can I book and pay online?', a: 'No — and that is intentional. Holiday Along Hotels is an enquiry platform. You browse verified hotels and real tariffs, then send an enquiry. Our travel desk confirms availability and shares a final proposal, and payment is arranged directly once you are happy.' },
-  { q: 'Are the tariffs shown final?', a: 'The rates on each hotel page are our contracted tariffs for the validity period shown, exclusive of taxes. They are indicative until we confirm availability for your exact dates, which we do when we reply to your enquiry.' },
+  { q: 'Can I book and pay online?', a: 'No — and that is intentional. You browse verified hotels and real tariffs, then book. Our travel desk confirms availability and shares a final proposal, and payment is arranged directly with the hotel once you are happy.' },
+  { q: 'Are the tariffs shown final?', a: 'The rates on each hotel page are our contracted tariffs for the validity period shown, exclusive of taxes. They are indicative until we confirm availability for your exact dates, which we do when we reply to your booking request.' },
   { q: 'What do EP, CP and MAP mean?', a: 'EP is room only, CP includes breakfast, and MAP includes breakfast plus one major meal. Every hotel page lists the rate for each plan so you can compare the true cost of your stay.' },
   { q: 'What are CNB, CWB and extra bed rates?', a: 'CNB is a child sharing the room without a bed, CWB is a child with a bed, and extra bed rates apply when an additional adult or child bed is added to the room. All of these are shown in the tariff table.' },
   { q: 'How quickly will I hear back?', a: 'Enquiries are answered by a person, not a bot, within one business day. Most guests hear back the same day between 9:30 am and 7:00 pm IST.' },
@@ -91,7 +91,7 @@ export default function Home() {
 
       {/* FEATURED */}
       <section className="container-x py-14 sm:py-16">
-        <SectionHead eyebrow="Top rated" title="Featured hotels" sub="Contracted tariffs, ready to enquire."
+        <SectionHead eyebrow="Top rated" title="Featured hotels" sub="Contracted tariffs, ready to book."
           action={<Link to="/hotels" className="btn-outline !py-2.5">View all hotels <ArrowRight size={15} /></Link>} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {(featured.length ? featured : Array.from({ length: 4 })).map((h, i) =>
@@ -164,7 +164,7 @@ export default function Home() {
       {deals.length > 0 && (
         <section className="border-y border-line bg-surface py-14 sm:py-16">
           <div className="container-x">
-            <SectionHead eyebrow="Best value" title="Deals worth an enquiry" sub="Our lowest contracted double-occupancy rates right now."
+            <SectionHead eyebrow="Best value" title="Deals worth booking" sub="Our lowest contracted double-occupancy rates right now."
               action={<Link to="/hotels" className="btn-outline !py-2.5">See all offers <ArrowRight size={15} /></Link>} />
             <div className="grid gap-3.5 lg:grid-cols-3">
               {deals.map((h) => (
@@ -177,7 +177,7 @@ export default function Home() {
                     <div className="mt-1.5 flex items-end justify-between gap-2">
                       <p className="text-[18px] font-extrabold text-ink-900">{money(h.startingPrice, h.currency)}<span className="text-[11px] font-medium text-ink-400"> /night</span></p>
                       <button onClick={() => openEnquiry({ hotelId: h._id, hotelName: h.name, roomType: h.topRoomType, mealPlan: h.topMealPlan })}
-                        className="btn-accent !px-3 !py-2 !text-[12px]">Enquire</button>
+                        className="btn-accent !px-3 !py-2 !text-[12px]">Book now</button>
                     </div>
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export default function Home() {
       {/* MEAL PLANS */}
       <section className="bg-surface py-14 sm:py-16">
         <div className="container-x">
-          <SectionHead eyebrow="Know before you enquire" title="Meal plans, explained" sub="Every tariff on this site is priced against one of these three plans." />
+          <SectionHead eyebrow="Know before you book" title="Meal plans, explained" sub="Every tariff on this site is priced against one of these three plans." />
           <div className="grid gap-4 lg:grid-cols-3">
             {MEAL_PLANS.map(({ code, name, text, icon: Icon, image }) => (
               <article key={code} className="group overflow-hidden rounded-2xl border border-line bg-white shadow-card transition hover:shadow-lift">
@@ -275,7 +275,7 @@ export default function Home() {
       {/* REVIEWS */}
       <section className="border-y border-line bg-surface py-14 sm:py-16">
         <div className="container-x">
-          <SectionHead eyebrow="Guest stories" title="What our guests say" sub="Feedback from travellers who enquired through us." />
+          <SectionHead eyebrow="Guest stories" title="What our guests say" sub="Feedback from travellers who booked through us." />
           <div className="grid gap-3.5 lg:grid-cols-3">
             {REVIEWS.map((r) => (
               <figure key={r.name} className="flex flex-col rounded-xl border border-line bg-white p-5">
@@ -294,7 +294,7 @@ export default function Home() {
 
       {/* FAQ */}
       <section className="container-x py-14 sm:py-16">
-        <SectionHead eyebrow="Good to know" title="Frequently asked questions" sub="How enquiries, tariffs and meal plans work on this site." />
+        <SectionHead eyebrow="Good to know" title="Frequently asked questions" sub="How bookings, tariffs and meal plans work on this site." />
         <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
           <div className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-white">
             {FAQS.map((f, i) => {
@@ -314,7 +314,7 @@ export default function Home() {
             <span className="grid h-11 w-11 place-items-center rounded-lg bg-white text-brand-600"><Headset size={20} /></span>
             <h3 className="mt-3.5 text-[16px] font-extrabold text-ink-900">Still have a question?</h3>
             <p className="mt-1.5 text-[13px] leading-relaxed text-ink-500">
-              Our travel desk answers every enquiry personally. Tell us your dates and what matters to you.
+              Our travel desk answers every booking request personally. Tell us your dates and what matters to you.
             </p>
             <CtaBar variant="stack" className="mt-4" waText="Hi! I have a question about a hotel stay." />
           </div>
