@@ -32,6 +32,7 @@ export const api = {
   destinations: () => req('/destinations'),
   cities: () => req('/cities'),
   brochures: () => req('/brochures'),
+  formats: () => req('/formats'),
   vendors: (type) => req('/vendors' + (type ? `?type=${type}` : '')),
   vendorHotels: (id) => req(`/vendors/${id}/hotels`),
   locations: (city) => req('/locations' + (city ? `?city=${city}` : '')),

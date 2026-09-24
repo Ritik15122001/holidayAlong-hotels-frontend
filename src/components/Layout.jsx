@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Mail, MapPin, ShieldCheck, Send, LogIn, LogOut, UserRound } from 'lucide-react';
+import { Menu, X, Phone, Mail, MapPin, Send, LogIn, LogOut, UserRound } from 'lucide-react';
 import Logo from './Logo.jsx';
 import { WhatsAppIcon } from './Icons.jsx';
 import { FloatingCta } from './CtaBar.jsx';
@@ -116,13 +116,6 @@ function Header() {
 
 const FOOT_IMG = (id, w = 700) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${w}`;
 
-const FOOT_DEST = [
-  { city: 'Goa', image: FOOT_IMG(2506988, 400) },
-  { city: 'Jaipur', image: FOOT_IMG(2869215, 400) },
-  { city: 'Udaipur', image: FOOT_IMG(4502973, 400) },
-  { city: 'Munnar', image: FOOT_IMG(6129967, 400) },
-];
-
 function Footer() {
   return (
     <footer className="relative mt-16 overflow-hidden bg-ink-900">
@@ -131,15 +124,12 @@ function Footer() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink-900/85 via-ink-900/95 to-ink-900" />
 
       <div className="relative">
-        <div className="container-x grid gap-10 py-14 lg:grid-cols-[1.25fr_0.7fr_1.1fr_1fr]">
+        <div className="container-x grid gap-10 py-14 lg:grid-cols-[1.4fr_0.8fr_1fr]">
           <div>
             <Logo onDark />
             <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed text-white/60">
               Handpicked luxury hotels and resorts across India, with transparent room and meal-plan tariffs and a human travel desk.
             </p>
-            <span className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[12px] font-bold text-white backdrop-blur">
-              <ShieldCheck size={14} className="text-accent-500" /> Verified properties only
-            </span>
           </div>
 
           <div>
@@ -150,28 +140,9 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-accent-500">Top destinations</h4>
-            <div className="grid grid-cols-2 gap-2.5">
-              {FOOT_DEST.map(({ city, image }) => (
-                <Link key={city} to="/hotels" className="group relative h-[68px] overflow-hidden rounded-xl">
-                  <img src={image} alt={city} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  <span className="absolute inset-0 bg-gradient-to-t from-ink-900/85 to-ink-900/10" />
-                  <span className="absolute inset-x-0 bottom-0 px-2.5 py-2 text-[12.5px] font-bold text-white">{city}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div>
             <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-accent-500">Contact</h4>
             <ul className="space-y-3 text-[14px] text-white/65">
               <li><a href={`tel:${PHONE}`} className="flex items-start gap-2.5 transition hover:text-white"><Phone size={16} className="mt-0.5 shrink-0 text-brand-300" /> {PHONE_DISPLAY}</a></li>
-              <li>
-                <a href={waLink()} target="_blank" rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-3 py-2 text-[13px] font-bold text-white transition hover:bg-[#1eb455]">
-                  <WhatsAppIcon size={16} /> Chat on WhatsApp
-                </a>
-              </li>
               <li><a href={`mailto:${EMAIL}`} className="flex items-start gap-2.5 break-all transition hover:text-white"><Mail size={16} className="mt-0.5 shrink-0 text-brand-300" /> {EMAIL}</a></li>
               <li className="flex items-start gap-2.5"><MapPin size={16} className="mt-0.5 shrink-0 text-brand-300" /> 12 Harbour Lane, Mumbai 400001</li>
             </ul>
