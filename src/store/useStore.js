@@ -83,15 +83,23 @@ export const useAuth = create((set) => ({
     return user;
   },
   logout: () => { persist('', null); set({ token: '', user: null }); },
+  /**
+   * Revalidates the stored session on load. Only a real rejection from the
+   * server ends the session — a network blip, a cold start or an offline
+   * moment must never sign the guest out, because the token is still good.
+   */
   refresh: async () => {
     if (!getToken()) return;
     try {
       const { user } = await api.me();
       persist(getToken(), user);
       set({ user });
-    } catch {
-      persist('', null);
-      set({ token: '', user: null });
+    } catch (e) {
+      if (e?.status === 401 || e?.status === 403) {
+        persist('', null);
+        set({ token: '', user: null });
+      }
+      // anything else (offline, 5xx, CORS, timeout) leaves the session alone
     }
   },
 }));
