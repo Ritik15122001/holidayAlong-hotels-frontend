@@ -11,9 +11,8 @@ import PricingTable from '../components/PricingTable.jsx';
 import HotelCard from '../components/HotelCard.jsx';
 import { api, money } from '../api';
 import CtaBar from '../components/CtaBar.jsx';
-import { WhatsAppIcon } from '../components/Icons.jsx';
 import { iconFor } from '../lib/icons.js';
-import { PHONE, PHONE_DISPLAY, EMAIL, waHotel } from '../components/Contact.js';
+import { EMAIL } from '../components/Contact.js';
 import { useEnquiry } from '../store/useStore';
 
 /** Icon per amenity comes from the amenity master; falls back to a generic one. */
@@ -321,7 +320,6 @@ export default function HotelDetails() {
               ))}
             </ul>
             <div className="mt-4 space-y-2 border-t border-line pt-4 text-[13px] text-ink-700">
-              <a href={`tel:${PHONE}`} className="flex items-center gap-2.5 hover:text-brand-700"><Phone size={15} className="text-brand-600" /> {PHONE_DISPLAY}</a>
               <a href={`mailto:${EMAIL}`} className="flex items-center gap-2.5 hover:text-brand-700"><Mail size={15} className="text-brand-600" /> {EMAIL}</a>
             </div>
           </div>
@@ -501,8 +499,6 @@ export default function HotelDetails() {
             <p className="text-[11px] text-ink-400">Starting from</p>
             <p className="truncate text-[18px] font-extrabold text-ink-900">{cheapest ? money(cheapest.doublePrice, cheapest.currency) : 'On request'}</p>
           </div>
-          <a href={`tel:${PHONE}`} aria-label="Call us" className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-line text-brand-700"><Phone size={18} /></a>
-          <a href={waHotel(hotel)} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-[#25D366] text-white"><WhatsAppIcon size={20} /></a>
           <button onClick={() => enquire()} className="btn-accent !px-5 !py-3 font-bold uppercase tracking-wide">Book now</button>
         </div>
       </div>
