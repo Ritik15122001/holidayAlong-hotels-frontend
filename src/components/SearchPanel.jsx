@@ -27,7 +27,6 @@ export default function SearchPanel() {
             onChange={(v) => setFilter({ q: v })}
             options={cities}
             placeholder="City, area or hotel"
-            openUp
             inputClassName="w-full bg-transparent text-[15px] font-semibold text-ink-900 outline-none placeholder:font-normal placeholder:text-ink-400"
           />
         </Field>
@@ -37,7 +36,6 @@ export default function SearchPanel() {
             checkIn={filters.checkIn}
             checkOut={filters.checkOut}
             onChange={setFilter}
-            openUp
             compact
           />
         </Field>
@@ -52,7 +50,7 @@ export default function SearchPanel() {
           {guestsOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setGuestsOpen(false)} />
-              <div className="absolute bottom-full left-0 right-0 z-40 mb-1.5 space-y-3 rounded-xl border border-line bg-white p-4 shadow-panel sm:min-w-[250px]">
+              <div className="absolute left-0 right-0 top-full z-40 mt-1.5 space-y-3 rounded-xl border border-line bg-white p-4 shadow-panel sm:min-w-[250px]">
                 {[['rooms', 'Rooms', 1], ['adults', 'Adults', 1], ['children', 'Children', 0]].map(([key, label, min]) => (
                   <div key={key} className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-ink-700">{label}</span>

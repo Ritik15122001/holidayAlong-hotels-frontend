@@ -35,6 +35,9 @@
   --rdp-font-family: inherit;
   font-size: 13px;
 }
+.rdp-root { width: max-content; }
+/* the library stacks months in a column by default */
+.rdp-root .rdp-months { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 1.25rem; }
 .rdp-month_caption { font-weight: 800; color: #0f1b2d; font-size: 13.5px; }
 .rdp-weekday { color: #7c8ba1; font-weight: 700; font-size: 11px; text-transform: uppercase; }
 .rdp-ha-selected .rdp-day_button { border-radius: 8px; }

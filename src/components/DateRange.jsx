@@ -12,8 +12,12 @@ const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); retur
  * Check-in / check-out picker. Renders two fields that open a shared
  * two-month calendar; the second date must fall after the first.
  */
-export default function DateRange({ checkIn, checkOut, onChange, openUp = false, compact = false }) {
+export default function DateRange({ checkIn, checkOut, onChange, compact = false }) {
   const [open, setOpen] = useState(false);
+  const [flip, setFlip] = useState(false);
+  const [months, setMonths] = useState(2);
+  const [offset, setOffset] = useState(0);
+  const popRef = useRef(null);
   const boxRef = useRef(null);
   const range = { from: parse(checkIn), to: parse(checkOut) };
 
@@ -24,6 +28,35 @@ export default function DateRange({ checkIn, checkOut, onChange, openUp = false,
     document.addEventListener('keydown', onKey);
     return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
   }, []);
+
+  /** Decide which way to open based on the room actually available. */
+  const toggle = () => {
+    if (!open && boxRef.current) {
+      const r = boxRef.current.getBoundingClientRect();
+      const below = window.innerHeight - r.bottom;
+      const above = r.top;
+      // one month is roughly 340px tall, two side-by-side the same
+      const wide = window.innerWidth >= 640 && Math.max(below, above) >= 380;
+      setMonths(wide ? 2 : 1);
+      setFlip(below < above);
+      setOffset(0);
+    }
+    setOpen((v) => !v);
+  };
+
+  // Nudge the popover so it never hangs off either edge.
+  useEffect(() => {
+    if (!open || !popRef.current) return;
+    setOffset(0);
+    const id = requestAnimationFrame(() => {
+      const r = popRef.current?.getBoundingClientRect();
+      if (!r) return;
+      const pad = 12;
+      if (r.right > window.innerWidth - pad) setOffset(Math.round(window.innerWidth - pad - r.right));
+      else if (r.left < pad) setOffset(Math.round(pad - r.left));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [open, months, flip]);
 
   const pick = (next) => {
     if (!next?.from) return;
@@ -38,7 +71,7 @@ export default function DateRange({ checkIn, checkOut, onChange, openUp = false,
 
   return (
     <div ref={boxRef} className="relative">
-      <button type="button" onClick={() => setOpen((v) => !v)}
+      <button type="button" onClick={toggle}
         className={compact
           ? 'flex w-full items-center gap-2 text-left'
           : 'field flex w-full items-center gap-2 text-left'}>
@@ -50,16 +83,17 @@ export default function DateRange({ checkIn, checkOut, onChange, openUp = false,
       </button>
 
       {open && (
-        <div className={`absolute left-0 z-50 rounded-xl border border-line bg-white p-3 shadow-panel ${openUp ? 'bottom-full mb-2' : 'top-full mt-2'}`}>
+        <div ref={popRef}
+          style={{ marginLeft: offset }}
+          className={`absolute left-0 z-50 max-h-[78vh] max-w-[calc(100vw-1.5rem)] overflow-auto rounded-xl border border-line bg-white p-3 shadow-panel ${flip ? 'bottom-full mb-2' : 'top-full mt-2'}`}>
           <DayPicker
             mode="range"
-            numberOfMonths={typeof window !== 'undefined' && window.innerWidth < 640 ? 1 : 2}
+            numberOfMonths={months}
             selected={range}
             onSelect={pick}
             defaultMonth={range.from || startOfToday()}
             disabled={{ before: startOfToday() }}
             showOutsideDays
-            styles={{ months: { display: 'flex', gap: '1rem' } }}
             modifiersClassNames={{
               selected: 'rdp-ha-selected',
               range_start: 'rdp-ha-edge',
