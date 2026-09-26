@@ -265,8 +265,6 @@ export default function HotelDetails() {
                           <p className="text-[11px] text-ink-400">per night</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <a href={waHotel(hotel)} target="_blank" rel="noreferrer" aria-label={`WhatsApp about ${r.name}`} className="grid h-9 w-9 place-items-center rounded-lg bg-[#25D366] text-white"><WhatsAppIcon size={16} /></a>
-                          <a href={`tel:${PHONE}`} aria-label="Call us" className="grid h-9 w-9 place-items-center rounded-lg border border-line text-brand-700"><Phone size={16} /></a>
                           <button onClick={() => enquire({ roomType: r.name, mealPlan: r.plans[0] })} className="btn-accent !px-4 !py-2 !text-[13px]">Book now</button>
                         </div>
                       </div>
