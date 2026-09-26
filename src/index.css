@@ -23,3 +23,23 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
+
+/* react-day-picker, themed to match the site */
+.rdp-root {
+  --rdp-accent-color: #1466e3;
+  --rdp-accent-background-color: #eaf2fe;
+  --rdp-day-height: 38px;
+  --rdp-day-width: 38px;
+  --rdp-day_button-height: 34px;
+  --rdp-day_button-width: 34px;
+  --rdp-font-family: inherit;
+  font-size: 13px;
+}
+.rdp-month_caption { font-weight: 800; color: #0f1b2d; font-size: 13.5px; }
+.rdp-weekday { color: #7c8ba1; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+.rdp-ha-selected .rdp-day_button { border-radius: 8px; }
+.rdp-ha-edge .rdp-day_button { background: #1466e3; color: #fff; font-weight: 700; }
+.rdp-ha-middle .rdp-day_button { background: #eaf2fe; color: #12459b; border-radius: 0; }
+.rdp-ha-today .rdp-day_button { font-weight: 800; color: #f97316; }
+.rdp-day_button:hover:not([disabled]) { background: #f5f8fc; }
+.rdp-day[data-disabled="true"] .rdp-day_button { color: #c3ccd9; }

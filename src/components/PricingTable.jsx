@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ChevronDown, CalendarRange, Info, ArrowUpDown, X } from 'lucide-react';
+import { ChevronDown, CalendarRange, Info, ArrowUpDown, X, Copy, Check } from 'lucide-react';
 import { money, fmtDate } from '../api';
 import { useEnquiry } from '../store/useStore';
 
@@ -29,6 +29,31 @@ export default function PricingTable({ prices, hotel }) {
   const [roomType, setRoomType] = useState('');
   const [mealPlan, setMealPlan] = useState('');
   const [sort, setSort] = useState('default');
+  const [copied, setCopied] = useState('');
+
+  /** One rate as plain text, ready to paste into WhatsApp or an email. */
+  const lineFor = (p) => {
+    const part = (label, k) => (p[k] > 0 ? `${label} ${money(p[k], p.currency)}` : null);
+    const occ = [part('Single', 'singlePrice'), part('Double', 'doublePrice'),
+                 part('Triple', 'triplePrice'), part('Quad', 'quadPrice')].filter(Boolean);
+    const extra = [part('CNB', 'cnbPrice'), part('CWB', 'cwbPrice'),
+                   part('Adult extra bed', 'adultExtraBedPrice')].filter(Boolean);
+    return [
+      `${hotel?.name || 'Hotel'} — ${p.roomTypeId?.name || ''} (${p.mealPlanId?.code || ''})`,
+      occ.join(' | '),
+      extra.length ? extra.join(' | ') : null,
+      `Valid ${fmtDate(p.startDate)} to ${fmtDate(p.endDate)}`,
+      'Rates are per room per night, exclusive of taxes.',
+    ].filter(Boolean).join('\n');
+  };
+
+  const copyLine = async (p) => {
+    try {
+      await navigator.clipboard.writeText(lineFor(p));
+      setCopied(p._id);
+      setTimeout(() => setCopied(''), 1600);
+    } catch { /* clipboard blocked */ }
+  };
 
   const periods = useMemo(() => {
     const seen = new Map();
@@ -151,9 +176,16 @@ export default function PricingTable({ prices, hotel }) {
                   <td className="px-3 py-3 text-center">
                     <span className={`badge ${p.status === 'Active' ? 'bg-emerald-50 text-emerald-700' : 'bg-surface text-ink-400'}`}>{p.status}</span>
                   </td>
-                  <td className="px-3 py-3 text-right">
-                    <button onClick={() => openEnquiry({ hotelId: hotel._id, hotelName: hotel.name, roomType: p.roomTypeId?.name, mealPlan: p.mealPlanId?.code })}
-                      className="whitespace-nowrap rounded-lg bg-accent-500 px-3 py-1.5 text-[12px] font-bold text-white transition hover:bg-accent-600">Book now</button>
+                  <td className="px-3 py-3">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button onClick={() => copyLine(p)} title="Copy this rate as text"
+                        className={`grid h-[30px] w-[30px] place-items-center rounded-lg border transition ${
+                          copied === p._id ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-line text-ink-500 hover:border-brand-300 hover:text-brand-700'}`}>
+                        {copied === p._id ? <Check size={14} /> : <Copy size={14} />}
+                      </button>
+                      <button onClick={() => openEnquiry({ hotelId: hotel._id, hotelName: hotel.name, roomType: p.roomTypeId?.name, mealPlan: p.mealPlanId?.code })}
+                        className="whitespace-nowrap rounded-lg bg-accent-500 px-3 py-1.5 text-[12px] font-bold text-white transition hover:bg-accent-600">Book now</button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -189,8 +221,14 @@ export default function PricingTable({ prices, hotel }) {
                       </div>
                     ))}
                   </dl>
-                  <button onClick={() => openEnquiry({ hotelId: hotel._id, hotelName: hotel.name, roomType: p.roomTypeId?.name, mealPlan: p.mealPlanId?.code })}
-                    className="btn-accent mt-3 w-full !py-2.5">Book this rate</button>
+                  <div className="mt-3 flex gap-2">
+                    <button onClick={() => copyLine(p)}
+                      className={`btn-outline !py-2.5 ${copied === p._id ? '!border-emerald-200 !text-emerald-700' : ''}`}>
+                      {copied === p._id ? <><Check size={15} /> Copied</> : <><Copy size={15} /> Copy</>}
+                    </button>
+                    <button onClick={() => openEnquiry({ hotelId: hotel._id, hotelName: hotel.name, roomType: p.roomTypeId?.name, mealPlan: p.mealPlanId?.code })}
+                      className="btn-accent flex-1 !py-2.5">Book this rate</button>
+                  </div>
                 </div>
               )}
             </div>

@@ -4,6 +4,7 @@ import { Search, MapPin, CalendarDays, Users, ChevronDown } from 'lucide-react';
 import { useSearch } from '../store/useStore';
 import { api } from '../api';
 import Autocomplete from './Autocomplete.jsx';
+import DateRange from './DateRange.jsx';
 import { placeOptions } from '../lib/places.js';
 
 export default function SearchPanel() {
@@ -19,7 +20,7 @@ export default function SearchPanel() {
 
   return (
     <div className="rounded-2xl border border-white/60 bg-white p-2.5 shadow-panel sm:p-3">
-      <form onSubmit={submit} className="grid grid-cols-2 gap-2 lg:grid-cols-[1.5fr_1fr_1fr_1.3fr_auto]">
+      <form onSubmit={submit} className="grid grid-cols-2 gap-2 lg:grid-cols-[1.4fr_1.5fr_1.2fr_auto]">
         <Field icon={MapPin} label="Destination" className="col-span-2 lg:col-span-1">
           <Autocomplete
             value={filters.q}
@@ -31,14 +32,14 @@ export default function SearchPanel() {
           />
         </Field>
 
-        <Field icon={CalendarDays} label="Check-in">
-          <input type="date" className="w-full bg-transparent text-[14px] font-semibold text-ink-900 outline-none sm:text-[15px]"
-            value={filters.checkIn} onChange={(e) => setFilter({ checkIn: e.target.value })} />
-        </Field>
-
-        <Field icon={CalendarDays} label="Check-out">
-          <input type="date" className="w-full bg-transparent text-[14px] font-semibold text-ink-900 outline-none sm:text-[15px]"
-            min={filters.checkIn} value={filters.checkOut} onChange={(e) => setFilter({ checkOut: e.target.value })} />
+        <Field icon={CalendarDays} label="Check-in — Check-out" className="col-span-2 lg:col-span-1">
+          <DateRange
+            checkIn={filters.checkIn}
+            checkOut={filters.checkOut}
+            onChange={setFilter}
+            openUp
+            compact
+          />
         </Field>
 
         <div className="relative">

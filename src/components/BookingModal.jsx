@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, CalendarCheck, Loader2, User, MapPin, BedDouble, ShieldCheck } from 'lucide-react';
 import { api } from '../api';
 import { useEnquiry, useMasters, useSearch, useAuth } from '../store/useStore';
+import DateRange from './DateRange.jsx';
 
 const Section = ({ icon: Icon, title, children }) => (
   <div className="col-span-2 sm:col-span-6">
@@ -98,8 +99,14 @@ export default function BookingModal() {
           </Section>
 
           <Section icon={BedDouble} title="Stay details">
-            <div className="col-span-1 sm:col-span-3"><label className="label">Check-in *</label><input required type="date" className="field" value={form.checkIn} onChange={set('checkIn')} /></div>
-            <div className="col-span-1 sm:col-span-3"><label className="label">Check-out *</label><input required type="date" className="field" value={form.checkOut} onChange={set('checkOut')} /></div>
+            <div className="col-span-2 sm:col-span-6">
+              <label className="label">Check-in — Check-out *</label>
+              <DateRange
+                checkIn={form.checkIn}
+                checkOut={form.checkOut}
+                onChange={({ checkIn, checkOut }) => setForm((f) => ({ ...f, checkIn, checkOut }))}
+              />
+            </div>
 
             <div className="col-span-2 sm:col-span-2"><label className="label">Rooms</label><input type="number" min="1" className="field" value={form.rooms} onChange={set('rooms')} /></div>
             <div className="col-span-1 sm:col-span-2"><label className="label">Adults</label><input type="number" min="1" className="field" value={form.adults} onChange={set('adults')} /></div>

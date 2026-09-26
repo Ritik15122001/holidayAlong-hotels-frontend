@@ -53,6 +53,7 @@ export default function HotelDetails() {
   const [prices, setPrices] = useState([]);
   const [similar, setSimilar] = useState([]);
   const [amenityIcons, setAmenityIcons] = useState({});
+  const [google, setGoogle] = useState(null);
   const [error, setError] = useState('');
   const [lightbox, setLightbox] = useState(-1);
   const [faq, setFaq] = useState(0);
@@ -79,6 +80,7 @@ export default function HotelDetails() {
           if (pick.length === 3) break;
         }
         setSimilar(pick);
+        api.googleRating(h._id).then((g) => g?.available && setGoogle(g)).catch(() => {});
         if (window.location.hash) {
           requestAnimationFrame(() => document.querySelector(window.location.hash)?.scrollIntoView());
         }
@@ -173,9 +175,20 @@ export default function HotelDetails() {
                 <a href={`https://www.google.com/maps/search/?api=1&query=${mapQ}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 font-semibold text-brand-700 hover:underline"><Navigation size={14} /> View on map</a>
               </p>
             </div>
-            <div className="flex items-center gap-2.5">
-              <span className="rounded-lg bg-brand-600 px-2.5 py-1.5 text-[15px] font-bold text-white">{rating.toFixed(1)}</span>
-              <div className="text-[12px] leading-tight text-ink-500"><span className="block font-bold text-ink-900">{RATING_LABEL(rating)}</span>Verified reviews</div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2.5">
+                <span className="rounded-lg bg-brand-600 px-2.5 py-1.5 text-[15px] font-bold text-white">{rating.toFixed(1)}</span>
+                <div className="text-[12px] leading-tight text-ink-500"><span className="block font-bold text-ink-900">{RATING_LABEL(rating)}</span>Verified reviews</div>
+              </div>
+              {google && (
+                <div className="flex items-center gap-2.5 border-l border-line pl-4">
+                  <span className="rounded-lg bg-ink-900 px-2.5 py-1.5 text-[15px] font-bold text-white">{Number(google.rating).toFixed(1)}</span>
+                  <div className="text-[12px] leading-tight text-ink-500">
+                    <span className="block font-bold text-ink-900">Google</span>
+                    {google.reviewCount ? `${google.reviewCount.toLocaleString('en-IN')} reviews` : 'rating'}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -384,6 +397,12 @@ export default function HotelDetails() {
             <div>
               <p className="text-[15px] font-extrabold text-ink-900">{RATING_LABEL(rating)}</p>
               <p className="flex items-center gap-1 text-[12.5px] text-ink-500"><Star size={13} className="fill-accent-500 text-accent-500" /> {hotel.starCategory}-star property · {hotel.city}</p>
+              {google && (
+                <p className="mt-1 text-[12.5px] text-ink-500">
+                  Google rating <span className="font-bold text-ink-900">{Number(google.rating).toFixed(1)}</span>
+                  {google.reviewCount ? ` from ${google.reviewCount.toLocaleString('en-IN')} reviews` : ''}
+                </p>
+              )}
             </div>
           </div>
           <div className="mt-4 space-y-2.5">

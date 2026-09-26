@@ -27,6 +27,7 @@ export const api = {
   hotels: (params) => req('/hotels?' + new URLSearchParams(params)),
   hotel: (id) => req(`/hotels/${id}`),
   prices: (id) => req(`/hotels/${id}/prices`),
+  googleRating: (id) => req(`/hotels/${id}/google-rating`),
   roomTypes: () => req('/room-types'),
   mealPlans: () => req('/meal-plans'),
   destinations: () => req('/destinations'),
