@@ -73,13 +73,13 @@ export default function DateRange({ checkIn, checkOut, onChange, compact = false
     <div ref={boxRef} className="relative">
       <button type="button" onClick={toggle}
         className={compact
-          ? 'flex w-full items-center gap-2 text-left'
+          ? 'flex w-full items-center gap-1.5 text-left'
           : 'field flex w-full items-center gap-2 text-left'}>
-        <CalendarDays size={16} className="shrink-0 text-brand-600" />
-        <span className={compact ? 'text-[14px] font-semibold text-ink-900 sm:text-[15px]' : 'text-[14px] text-ink-900'}>
+        {!compact && <CalendarDays size={16} className="shrink-0 text-brand-600" />}
+        <span className={compact ? 'truncate text-[14px] font-semibold text-ink-900 sm:text-[15px]' : 'text-[14px] text-ink-900'}>
           {label(range.from)} <ArrowRight size={12} className="inline -mt-0.5 text-ink-400" /> {label(range.to)}
         </span>
-        {nights > 0 && <span className="ml-auto shrink-0 text-[11px] font-semibold text-ink-400">{nights}N</span>}
+        {nights > 0 && <span className="ml-auto shrink-0 pl-1 text-[11px] font-semibold text-ink-400">{nights}N</span>}
       </button>
 
       {open && (
