@@ -30,18 +30,18 @@ export default function Hero() {
       ))}
       <div className="absolute inset-0 bg-gradient-to-br from-ink-900/85 via-ink-900/55 to-ink-900/25" />
 
-      <div className="container-x relative flex flex-1 flex-col justify-center pb-6 pt-14 sm:pt-16">
-        <div className="max-w-[640px]">
+      <div className="container-x relative flex flex-1 flex-col items-center justify-center pb-6 pt-14 text-center sm:pt-16">
+        <div className="max-w-[720px]">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/12 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white backdrop-blur-sm sm:text-[12px]">
             <ShieldCheck size={14} className="shrink-0" /> {SLIDES[i].tag}
           </span>
           <h1 className="mt-5 text-[30px] font-extrabold uppercase leading-[1.06] tracking-[-0.01em] text-white sm:text-[44px] lg:text-[54px]">
             {SLIDES[i].title}
           </h1>
-          <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-white/80 sm:text-[17px]">{SLIDES[i].sub}</p>
+          <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-white/80 sm:text-[17px]">{SLIDES[i].sub}</p>
         </div>
 
-        <div className="mt-7 flex items-center gap-2.5">
+        <div className="mt-7 flex items-center justify-center gap-2.5">
           <button onClick={prev} aria-label="Previous slide"
             className="grid h-10 w-10 place-items-center rounded-full border border-white/30 text-white transition hover:bg-white hover:text-ink-900">
             <ChevronLeft size={18} />
@@ -60,7 +60,9 @@ export default function Hero() {
       </div>
 
       <div className="container-x relative w-full pb-6 sm:pb-8">
-        <SearchPanel />
+        <div className="mx-auto w-full max-w-5xl">
+          <SearchPanel />
+        </div>
       </div>
     </section>
   );

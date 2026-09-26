@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Menu, X, Send, LogIn, LogOut, UserRound } from 'lucide-react';
 import Logo from './Logo.jsx';
-import { FloatingCta } from './CtaBar.jsx';
 import { useEnquiry, useAuth } from '../store/useStore';
 import BookingModal from './BookingModal.jsx';
 
@@ -104,33 +103,9 @@ const FOOT_IMG = (id, w = 700) => `https://images.pexels.com/photos/${id}/pexels
 
 function Footer() {
   return (
-    <footer className="relative mt-16 overflow-hidden bg-ink-900">
-      <img src={FOOT_IMG(1134176, 1600)} alt="" aria-hidden="true" loading="lazy"
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-25" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink-900/85 via-ink-900/95 to-ink-900" />
-
-      <div className="relative">
-        <div className="container-x grid gap-10 py-14 lg:grid-cols-[1.6fr_1fr]">
-          <div>
-            <Logo onDark />
-            <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed text-white/60">
-              Handpicked luxury hotels and resorts across India, with transparent room and meal-plan tariffs and a human travel desk.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-accent-500">Explore</h4>
-            <ul className="space-y-2.5 text-[14px] text-white/65">
-              {links.map((l) => <li key={l.to}><Link to={l.to} className="transition hover:text-white">{l.label}</Link></li>)}
-            </ul>
-          </div>
-
-        </div>
-
-        <div className="container-x flex flex-col items-center justify-between gap-2 border-t border-white/10 py-5 text-[12px] text-white/45 sm:flex-row">
-          <p>© {new Date().getFullYear()} Holiday Along Hotels</p>
-          <p>Booking requests handled by a real team — no online payments</p>
-        </div>
+    <footer className="mt-16 border-t border-line bg-surface">
+      <div className="container-x py-5 text-center text-[12px] text-ink-400">
+        © {new Date().getFullYear()} HolidayAlong | Strictly Internal Use Only.
       </div>
     </footer>
   );
@@ -147,7 +122,6 @@ export default function Layout() {
       <Header />
       <main className="flex-1"><Outlet /></main>
       <Footer />
-      <FloatingCta />
       {open && <BookingModal />}
     </div>
   );
