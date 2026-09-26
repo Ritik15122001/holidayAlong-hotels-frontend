@@ -8,7 +8,7 @@ import { Check, Loader2 } from 'lucide-react';
  */
 export default function Autocomplete({
   value, onChange, options = [], fetchOptions, placeholder = '',
-  icon: Icon, className = '', inputClassName = 'field', disabled = false, emptyHint,
+  icon: Icon, className = '', inputClassName = 'field', disabled = false, emptyHint, openUp = false,
 }) {
   const [open, setOpen] = useState(false);
   const [remote, setRemote] = useState([]);
@@ -66,7 +66,7 @@ export default function Autocomplete({
       {loading && <Loader2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-slate-400" />}
 
       {open && (list.length > 0 || emptyHint) && (
-        <ul className="absolute left-0 right-0 top-full z-30 mt-1 max-h-60 overflow-y-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+        <ul className={`absolute left-0 right-0 z-40 max-h-60 overflow-y-auto rounded-lg border border-line bg-white py-1 shadow-panel ${openUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
           {list.map((o, i) => (
             <li key={o}>
               <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => pick(o)}
