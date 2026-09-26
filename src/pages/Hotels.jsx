@@ -3,7 +3,6 @@ import { SlidersHorizontal, X, SearchX, ChevronLeft, ChevronRight } from 'lucide
 import HotelCard from '../components/HotelCard.jsx';
 import Filters from '../components/Filters.jsx';
 import { useSearch } from '../store/useStore';
-import CtaBar from '../components/CtaBar.jsx';
 
 export default function Hotels() {
   const { filters, hotels, total, page, pages, loading, error, fetchHotels, setFilter, setPage } = useSearch();
@@ -67,16 +66,6 @@ export default function Hotels() {
           ) : (
             <div className="grid gap-4">
               {hotels.map((h) => <HotelCard key={h._id} hotel={h} horizontal />)}
-            </div>
-          )}
-
-          {!loading && hotels.length > 0 && (
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-brand-100 bg-brand-50 p-4 sm:p-5">
-              <div>
-                <p className="text-[15px] font-extrabold text-ink-900">Not sure which one to pick?</p>
-                <p className="mt-0.5 text-[13px] text-ink-500">Tell our travel desk your dates and budget — we'll shortlist for you.</p>
-              </div>
-              <CtaBar waText="Hi! Please help me shortlist a hotel." labels={false} />
             </div>
           )}
 
