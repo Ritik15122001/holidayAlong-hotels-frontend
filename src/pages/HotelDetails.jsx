@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   MapPin, Wifi, Waves, UtensilsCrossed, Car, ConciergeBell, Snowflake, Dumbbell, Flower2,
-  LogIn, LogOut, X, ChevronLeft, ChevronRight, Phone, Mail, ArrowLeft, Images, ShieldCheck, Check,
+  LogIn, LogOut, X, ChevronLeft, ChevronRight, Phone, ArrowLeft, Images, ShieldCheck, Check,
   BedDouble, Users, Baby, CreditCard, Ban, Clock, Navigation, Star, ChevronDown, Coffee,
-  Plane, TrainFront, Sparkles, FileText, Maximize2, Cigarette, PawPrint, Building2, CalendarDays,
+  Plane, TrainFront, FileText, Maximize2, Cigarette, PawPrint, Building2, CalendarDays,
   Download,
 } from 'lucide-react';
 import Stars from '../components/Stars.jsx';
@@ -13,7 +13,6 @@ import HotelCard from '../components/HotelCard.jsx';
 import { api, money } from '../api';
 import CtaBar from '../components/CtaBar.jsx';
 import { iconFor } from '../lib/icons.js';
-import { EMAIL } from '../components/Contact.js';
 import { useEnquiry } from '../store/useStore';
 
 /** Icon per amenity comes from the amenity master; falls back to a generic one. */
@@ -337,28 +336,6 @@ export default function HotelDetails() {
             </p>
             {cheapest && <p className="mt-0.5 text-[12px] text-ink-500">{cheapest.roomTypeId?.name} · {cheapest.mealPlanId?.code} · double occupancy</p>}
             <CtaBar variant="stack" className="mt-4" context={{ hotelId: hotel._id, hotelName: hotel.name }} waText={waText} />
-            <ul className="mt-4 space-y-2 border-t border-line pt-4 text-[13px] text-ink-700">
-              {['No payment online', 'Reply within 24 hours', 'Free to cancel before we confirm'].map((t) => (
-                <li key={t} className="flex items-center gap-2"><Check size={15} className="shrink-0 text-emerald-600" /> {t}</li>
-              ))}
-            </ul>
-            <div className="mt-4 space-y-2 border-t border-line pt-4 text-[13px] text-ink-700">
-              <a href={`mailto:${EMAIL}`} className="flex items-center gap-2.5 hover:text-brand-700"><Mail size={15} className="text-brand-600" /> {EMAIL}</a>
-            </div>
-          </div>
-
-          <div className="card mt-4 p-5">
-            <h3 className="flex items-center gap-2 text-[14px] font-extrabold text-ink-900"><Sparkles size={16} className="text-accent-500" /> Why guests pick us</h3>
-            <ul className="mt-3 space-y-2.5 text-[13px] text-ink-700">
-              {[['Direct hotel tariffs', 'Rates negotiated with the property, not scraped.'],
-                ['One person, start to finish', 'The same stay expert handles your booking.'],
-                ['Zero obligation', 'Ask as many questions as you like before deciding.']].map(([t, d]) => (
-                <li key={t}>
-                  <p className="font-bold text-ink-900">{t}</p>
-                  <p className="text-ink-500">{d}</p>
-                </li>
-              ))}
-            </ul>
           </div>
         </aside>
       </section>
@@ -473,30 +450,6 @@ export default function HotelDetails() {
             ))}
           </div>
         </Block>
-      </section>
-
-      {/* ENQUIRE CTA */}
-      <section className="container-x mt-5">
-        <div className="relative overflow-hidden rounded-3xl">
-          <img src={imgs[1] || imgs[0]} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-br from-ink-900/92 via-ink-900/75 to-brand-900/55" />
-          <div className="relative grid items-center gap-8 p-7 sm:p-12 lg:grid-cols-[1.15fr_0.85fr]">
-            <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[12px] font-bold text-white backdrop-blur"><Sparkles size={14} /> Ready when you are</span>
-              <h2 className="mt-4 text-[24px] font-extrabold leading-tight text-white sm:text-[32px]">Plan your stay at<br className="hidden sm:block" /> {hotel.name}</h2>
-              <p className="mt-2.5 max-w-lg text-[14.5px] leading-relaxed text-white/70">Send us your dates and occupancy. We will come back with the exact tariff, room availability and any offer running at the property.</p>
-              <CtaBar className="mt-6" context={{ hotelId: hotel._id, hotelName: hotel.name }} waText={waText} />
-            </div>
-            <div className="grid grid-cols-3 gap-3 text-center">
-              {[[cheapest ? money(cheapest.doublePrice, cheapest.currency) : 'On request', 'Starting rate'], [`${prices.length}`, 'Live tariffs'], ['24 hrs', 'Reply time']].map(([v, l]) => (
-                <div key={l} className="rounded-2xl border border-white/15 bg-white/10 px-2 py-5 backdrop-blur">
-                  <p className="text-[17px] font-extrabold leading-tight text-white sm:text-[21px]">{v}</p>
-                  <p className="mt-1 text-[11.5px] text-white/60">{l}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* SIMILAR */}
