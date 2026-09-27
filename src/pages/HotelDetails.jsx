@@ -13,6 +13,7 @@ import HotelCard from '../components/HotelCard.jsx';
 import { api, money } from '../api';
 import CtaBar from '../components/CtaBar.jsx';
 import { iconFor } from '../lib/icons.js';
+import { starsOf } from '../lib/categories.js';
 import { useEnquiry } from '../store/useStore';
 
 /** Icon per amenity comes from the amenity master; falls back to a generic one. */
@@ -166,7 +167,9 @@ export default function HotelDetails() {
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
                 <h1 className="text-[24px] font-extrabold leading-tight text-ink-900 sm:text-[30px]">{hotel.name}</h1>
-                <Stars count={hotel.starCategory} size={15} />
+                {starsOf(hotel.starCategory)
+                  ? <Stars count={starsOf(hotel.starCategory)} size={15} />
+                  : <span className="rounded-md bg-surface px-2 py-0.5 text-[12px] font-bold text-ink-700">{hotel.starCategory}</span>}
               </div>
               <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-ink-500">
                 <span className="flex items-center gap-1.5"><MapPin size={15} className="text-brand-600" /> {hotel.address || `${hotel.location}, ${hotel.city}`}</span>
@@ -233,7 +236,7 @@ export default function HotelDetails() {
           <Block id="overview" title="About this hotel">
             <p className="text-[14px] leading-relaxed text-ink-700">{hotel.description}</p>
             <p className="mt-3 text-[14px] leading-relaxed text-ink-700">
-              Set in {hotel.location}, {hotel.city}, this {hotel.starCategory}-star property is a favourite with our guests for
+              Set in {hotel.location}, {hotel.city}, this {String(hotel.starCategory).toLowerCase()} property is a favourite with our guests for
               {hotel.amenities?.length ? ` its ${hotel.amenities.slice(0, 3).join(', ').toLowerCase()}` : ' its warm service'} and its easy access to the city's best-known sights.
               Share your dates and we will confirm the exact room, meal plan and tariff with the hotel for you.
             </p>
@@ -242,7 +245,7 @@ export default function HotelDetails() {
               <Info icon={LogOut} label="Check-out" value={`Until ${hotel.checkOut || '11:00'}`} />
               <Info icon={MapPin} label="Location" value={`${hotel.location}, ${hotel.city}`} />
               <Info icon={Phone} label="Hotel desk" value={hotel.phone || '—'} />
-              <Info icon={Building2} label="Property type" value={`${hotel.starCategory}-star hotel`} />
+              <Info icon={Building2} label="Property type" value={hotel.starCategory} />
               <Info icon={FileText} label="Tariff records" value={`${prices.length} live rates`} />
             </div>
           </Block>
@@ -394,7 +397,7 @@ export default function HotelDetails() {
             <span className="rounded-xl bg-brand-600 px-3 py-2 text-[24px] font-extrabold leading-none text-white">{rating.toFixed(1)}</span>
             <div>
               <p className="text-[15px] font-extrabold text-ink-900">{RATING_LABEL(rating)}</p>
-              <p className="flex items-center gap-1 text-[12.5px] text-ink-500"><Star size={13} className="fill-accent-500 text-accent-500" /> {hotel.starCategory}-star property · {hotel.city}</p>
+              <p className="flex items-center gap-1 text-[12.5px] text-ink-500"><Star size={13} className="fill-accent-500 text-accent-500" /> {hotel.starCategory} · {hotel.city}</p>
               {google && (
                 <p className="mt-1 text-[12.5px] text-ink-500">
                   Google rating <span className="font-bold text-ink-900">{Number(google.rating).toFixed(1)}</span>

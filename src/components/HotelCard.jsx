@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Utensils, BedDouble, ShieldCheck } from 'lucide-react';
 import Stars from './Stars.jsx';
+import { starsOf } from '../lib/categories.js';
 import { money } from '../api';
 import { useEnquiry } from '../store/useStore';
 
@@ -30,7 +31,7 @@ export default function HotelCard({ hotel, horizontal = false }) {
         </div>
 
         <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-          <Stars count={hotel.starCategory} size={12} />
+          {starsOf(hotel.starCategory) ? <Stars count={starsOf(hotel.starCategory)} size={12} /> : <span className="rounded bg-surface px-1.5 py-0.5 text-[10.5px] font-bold text-ink-700">{hotel.starCategory}</span>}
           <span className="flex min-w-0 items-center gap-1 text-[12.5px] text-ink-500">
             <MapPin size={12} className="shrink-0 text-brand-600" /><span className="truncate">{hotel.location}, {hotel.city}</span>
           </span>

@@ -3,6 +3,7 @@ import { RotateCcw, Search } from 'lucide-react';
 import { useSearch, useMasters } from '../store/useStore';
 import Autocomplete from './Autocomplete.jsx';
 import { placeOptions } from '../lib/places.js';
+import { HOTEL_CATEGORIES } from '../lib/categories.js';
 
 export default function Filters() {
   const { filters, setFilter, toggleArr, clearFilters } = useSearch();
@@ -29,10 +30,10 @@ export default function Filters() {
         />
       </Group>
 
-      <Group title="Star category">
-        <div className="space-y-2">
-          {[5, 4, 3, 2].map((s) => (
-            <Check key={s} checked={filters.stars.includes(s)} onChange={() => toggleArr('stars', s)} label={`${s} Star`} />
+      <Group title="Category">
+        <div className="no-scrollbar max-h-56 space-y-2 overflow-y-auto pr-1">
+          {HOTEL_CATEGORIES.map((c) => (
+            <Check key={c} checked={filters.stars.includes(c)} onChange={() => toggleArr('stars', c)} label={c} />
           ))}
         </div>
       </Group>
