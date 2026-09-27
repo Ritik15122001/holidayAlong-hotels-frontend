@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, CalendarCheck, Loader2 } from 'lucide-react';
 import { api } from '../api';
-import { useEnquiry, useMasters, useSearch, useAuth } from '../store/useStore';
+import { useEnquiry, useMasters } from '../store/useStore';
 import DatePick from './DatePick.jsx';
 
 /** One labelled row of the booking format. */
@@ -28,26 +28,25 @@ const num = (v) => (v === '' ? '' : Math.max(0, Number(v) || 0));
 export default function BookingModal() {
   const { context, closeEnquiry } = useEnquiry();
   const { roomTypes, mealPlans, load } = useMasters();
-  const searchFilters = useSearch((s) => s.filters);
   const navigate = useNavigate();
-  const user = useAuth((st) => st.user);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
+  // every field starts empty — nothing is guessed for the user
   const [form, setForm] = useState({
-    name: user?.name || '',
-    hotelName: context?.hotelName || '',
-    checkIn: searchFilters.checkIn || '',
-    checkOut: searchFilters.checkOut || '',
+    name: '',
+    hotelName: '',
+    checkIn: '',
+    checkOut: '',
     reCheckIn: '',
     reCheckOut: '',
-    adults: 2,
-    rooms: 1,
-    extraBeds: 0,
-    childWithBed: 0,
+    adults: '',
+    rooms: '',
+    extraBeds: '',
+    childWithBed: '',
     childNoBedAges: '',
-    roomType: context?.roomType || '',
-    mealPlan: context?.mealPlan || '',
+    roomType: '',
+    mealPlan: '',
     extraInclusions: '',
     totalAmount: '',
   });
@@ -80,8 +79,13 @@ export default function BookingModal() {
     }
     setSaving(true);
     try {
+      const toNum = (v) => (v === '' || v === null ? 0 : Number(v) || 0);
       await api.createLead({
         ...form,
+        adults: toNum(form.adults),
+        rooms: toNum(form.rooms),
+        extraBeds: toNum(form.extraBeds),
+        childWithBed: toNum(form.childWithBed),
         childNoBed: form.childNoBedAges.trim() ? 1 : 0,
         hotelId: context?.hotelId,
         hotelName: form.hotelName || context?.hotelName,
@@ -134,19 +138,19 @@ export default function BookingModal() {
             </Row>
 
             <Row label="Total No. of Nights">
-              <input readOnly value={nights} className="field !bg-surface font-bold" />
+              <input readOnly value={nights || ''} placeholder="Calculated from the dates" className="field !bg-surface font-bold" />
             </Row>
             <Row label="No. of Adults (12+ Years)">
-              <input type="number" min="0" className="field" value={form.adults} onChange={(e) => setForm((f) => ({ ...f, adults: num(e.target.value) }))} />
+              <input type="number" min="0" className="field" placeholder="2" value={form.adults} onChange={(e) => setForm((f) => ({ ...f, adults: num(e.target.value) }))} />
             </Row>
             <Row label="No. of Rooms">
-              <input type="number" min="0" className="field" value={form.rooms} onChange={(e) => setForm((f) => ({ ...f, rooms: num(e.target.value) }))} />
+              <input type="number" min="0" className="field" placeholder="1" value={form.rooms} onChange={(e) => setForm((f) => ({ ...f, rooms: num(e.target.value) }))} />
             </Row>
             <Row label="No. Of Extra Beds">
-              <input type="number" min="0" className="field" value={form.extraBeds} onChange={(e) => setForm((f) => ({ ...f, extraBeds: num(e.target.value) }))} />
+              <input type="number" min="0" className="field" placeholder="0" value={form.extraBeds} onChange={(e) => setForm((f) => ({ ...f, extraBeds: num(e.target.value) }))} />
             </Row>
             <Row label="No. of Child with Bed">
-              <input type="number" min="0" className="field" value={form.childWithBed} onChange={(e) => setForm((f) => ({ ...f, childWithBed: num(e.target.value) }))} />
+              <input type="number" min="0" className="field" placeholder="0" value={form.childWithBed} onChange={(e) => setForm((f) => ({ ...f, childWithBed: num(e.target.value) }))} />
             </Row>
             <Row label="No. of Child without Bed" hint="Include ages, e.g. 1 of 7 Years">
               <input className="field" value={form.childNoBedAges} onChange={set('childNoBedAges')} placeholder="1 of 7 Years" />
