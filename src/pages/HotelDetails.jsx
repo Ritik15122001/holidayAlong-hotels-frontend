@@ -5,6 +5,7 @@ import {
   LogIn, LogOut, X, ChevronLeft, ChevronRight, Phone, Mail, ArrowLeft, Images, ShieldCheck, Check,
   BedDouble, Users, Baby, CreditCard, Ban, Clock, Navigation, Star, ChevronDown, Coffee,
   Plane, TrainFront, Sparkles, FileText, Maximize2, Cigarette, PawPrint, Building2, CalendarDays,
+  Download,
 } from 'lucide-react';
 import Stars from '../components/Stars.jsx';
 import PricingTable from '../components/PricingTable.jsx';
@@ -302,6 +303,28 @@ export default function HotelDetails() {
               <div className="mt-4 rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-ink-700">
                 <span className="font-bold text-ink-900">Need something specific?</span> Airport transfer, early check-in, a connecting room or a celebration set-up — mention it when you book and we will check with the hotel.
               </div>
+            </Block>
+          )}
+
+          {hotel.documents?.length > 0 && (
+            <Block id="documents" title="Documents" sub="Rate sheets, contracts and brochures for this property.">
+              <ul className="space-y-2">
+                {hotel.documents.map((doc, i) => (
+                  <li key={doc.url + i}>
+                    <a href={doc.url} target="_blank" rel="noreferrer" download
+                      className="flex items-center gap-3 rounded-xl border border-line px-4 py-3 transition hover:border-brand-200 hover:shadow-card">
+                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-red-50 text-red-600">
+                        <FileText size={18} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[14px] font-bold text-ink-900">{doc.name || doc.url.split('/').pop()}</span>
+                        {doc.size > 0 && <span className="text-[12px] text-ink-400">{Math.round(doc.size / 1024)} KB</span>}
+                      </span>
+                      <Download size={16} className="shrink-0 text-brand-600" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </Block>
           )}
         </div>
