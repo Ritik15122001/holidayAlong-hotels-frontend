@@ -40,7 +40,7 @@ export default function SearchPanel() {
           />
         </Field>
 
-        <div className="relative">
+        <div className="relative col-span-2 lg:col-span-1">
           <Field icon={Users} label="Rooms & guests">
             <button type="button" onClick={() => setGuestsOpen((o) => !o)} className="flex w-full items-center justify-between gap-1 text-left text-[14px] font-semibold text-ink-900 sm:text-[15px]">
               <span className="truncate">{guestLabel}</span>
@@ -50,7 +50,7 @@ export default function SearchPanel() {
           {guestsOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setGuestsOpen(false)} />
-              <div className="absolute left-0 right-0 top-full z-40 mt-1.5 space-y-3 rounded-xl border border-line bg-white p-4 shadow-panel sm:min-w-[250px]">
+              <div className="absolute left-0 right-0 top-full z-40 mt-1.5 space-y-3.5 rounded-xl border border-line bg-white p-4 shadow-panel">
                 {[['rooms', 'Rooms', 1], ['adults', 'Adults', 1], ['children', 'Children', 0]].map(([key, label, min]) => (
                   <div key={key} className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-ink-700">{label}</span>
