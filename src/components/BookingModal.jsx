@@ -1,18 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, CalendarCheck, Loader2, User, MapPin, BedDouble, ShieldCheck } from 'lucide-react';
+import { X, CalendarCheck, Loader2 } from 'lucide-react';
 import { api } from '../api';
 import { useEnquiry, useMasters, useSearch, useAuth } from '../store/useStore';
-import DateRange from './DateRange.jsx';
+import DatePick from './DatePick.jsx';
 
-const Section = ({ icon: Icon, title, children }) => (
-  <div className="col-span-2 sm:col-span-6">
-    <p className="mb-2.5 flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.14em] text-ink-400">
-      <Icon size={14} className="text-brand-600" /> {title}
-    </p>
-    <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 sm:grid-cols-6">{children}</div>
+/** One labelled row of the booking format. */
+const Row = ({ label, children, hint }) => (
+  <div className="grid grid-cols-1 items-center gap-1.5 border-b border-line px-4 py-2.5 last:border-b-0 sm:grid-cols-[minmax(190px,0.8fr)_1.2fr] sm:gap-4">
+    <label className="text-[13px] font-bold text-ink-900">{label}</label>
+    <div>
+      {children}
+      {hint && <p className="mt-1 text-[11.5px] text-ink-400">{hint}</p>}
+    </div>
   </div>
 );
+
+/** The yellow banded section headings from the format. */
+const SectionRow = ({ label }) => (
+  <div className="border-b border-line bg-amber-50 px-4 py-2">
+    <p className="text-[12.5px] font-extrabold uppercase tracking-wide text-amber-900">{label}</p>
+  </div>
+);
+
+const num = (v) => (v === '' ? '' : Math.max(0, Number(v) || 0));
 
 export default function BookingModal() {
   const { context, closeEnquiry } = useEnquiry();
@@ -24,11 +35,21 @@ export default function BookingModal() {
   const [error, setError] = useState('');
 
   const [form, setForm] = useState({
-    name: user?.name || '', email: user?.email || '', phone: user?.phone || '', altPhone: '',
-    address: '', city: '', state: '', country: 'India',
-    checkIn: searchFilters.checkIn, checkOut: searchFilters.checkOut,
-    rooms: searchFilters.rooms, adults: searchFilters.adults, children: searchFilters.children,
-    roomType: context?.roomType || '', mealPlan: context?.mealPlan || '', message: '',
+    name: user?.name || '',
+    hotelName: context?.hotelName || '',
+    checkIn: searchFilters.checkIn || '',
+    checkOut: searchFilters.checkOut || '',
+    reCheckIn: '',
+    reCheckOut: '',
+    adults: 2,
+    rooms: 1,
+    extraBeds: 0,
+    childWithBed: 0,
+    childNoBedAges: '',
+    roomType: context?.roomType || '',
+    mealPlan: context?.mealPlan || '',
+    extraInclusions: '',
+    totalAmount: '',
   });
 
   useEffect(() => { load(); }, [load]);
@@ -40,24 +61,33 @@ export default function BookingModal() {
   }, [closeEnquiry]);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const setVal = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
-  const nights = (() => {
-    const a = new Date(form.checkIn), b = new Date(form.checkOut);
-    const n = Math.round((b - a) / 864e5);
-    return Number.isFinite(n) && n > 0 ? n : 0;
-  })();
+  // total nights across both stays, same as the server works it out
+  const nights = useMemo(() => {
+    const span = (a, z) => (a && z ? Math.max(0, Math.round((new Date(z) - new Date(a)) / 864e5)) : 0);
+    return span(form.checkIn, form.checkOut) + span(form.reCheckIn, form.reCheckOut);
+  }, [form.checkIn, form.checkOut, form.reCheckIn, form.reCheckOut]);
 
   const submit = async (e) => {
     e.preventDefault();
     setError('');
-    if (form.checkOut && form.checkIn && new Date(form.checkOut) <= new Date(form.checkIn)) {
-      return setError('Check-out must be after check-in.');
+    if (!form.name.trim()) return setError('Guest Name is required.');
+    if (!form.checkIn || !form.checkOut) return setError('First check-in and check-out dates are required.');
+    if (new Date(form.checkOut) <= new Date(form.checkIn)) return setError('Check Out Date must be after Check-in Date.');
+    if (form.reCheckIn && form.reCheckOut && new Date(form.reCheckOut) <= new Date(form.reCheckIn)) {
+      return setError('Re-check-out must be after re-check-in.');
     }
     setSaving(true);
     try {
-      await api.createLead({ ...form, hotelId: context?.hotelId, hotelName: context?.hotelName });
+      await api.createLead({
+        ...form,
+        childNoBed: form.childNoBedAges.trim() ? 1 : 0,
+        hotelId: context?.hotelId,
+        hotelName: form.hotelName || context?.hotelName,
+      });
       closeEnquiry();
-      navigate('/enquiry-success', { state: { name: form.name, hotelName: context?.hotelName } });
+      navigate('/enquiry-success', { state: { name: form.name, hotelName: form.hotelName || context?.hotelName } });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -72,79 +102,83 @@ export default function BookingModal() {
 
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-line bg-white px-5 py-4 sm:px-6">
           <div className="min-w-0">
-            <h2 className="text-[20px] font-extrabold text-ink-900">Book your stay</h2>
-            <p className="truncate text-[13px] text-ink-500">
-              {context?.hotelName
-                ? <>At <span className="font-semibold text-ink-900">{context.hotelName}</span>{nights ? ` · ${nights} night${nights > 1 ? 's' : ''}` : ''}</>
-                : 'Tell us your details and we will confirm availability and the final tariff.'}
-            </p>
+            <h2 className="text-[20px] font-extrabold text-ink-900">Book now</h2>
+            <p className="text-[13px] text-ink-500">Kindly confirm the below booking.</p>
           </div>
           <button onClick={closeEnquiry} aria-label="Close" className="shrink-0 rounded-lg p-1.5 text-ink-500 transition hover:bg-surface hover:text-ink-900"><X size={20} /></button>
         </div>
 
-        <form onSubmit={submit} className="grid grid-cols-2 gap-x-4 gap-y-6 px-5 py-5 sm:grid-cols-6 sm:px-6">
+        <form onSubmit={submit}>
+          <div className="m-5 overflow-hidden rounded-xl border border-line sm:m-6">
+            <Row label="Guest Name">
+              <input required className="field" value={form.name} onChange={set('name')} placeholder="Mrs. Rikta Zamindar" />
+            </Row>
+            <Row label="Hotel Name">
+              <input className="field" value={form.hotelName} onChange={set('hotelName')} placeholder="Hotel name, city" />
+            </Row>
 
-          <Section icon={User} title="Guest details">
-            <div className="col-span-2 sm:col-span-3"><label className="label">Full name *</label><input required className="field" value={form.name} onChange={set('name')} placeholder="Your full name" /></div>
-            <div className="col-span-2 sm:col-span-3"><label className="label">Email *</label><input required type="email" className="field" value={form.email} onChange={set('email')} placeholder="you@email.com" /></div>
-            <div className="col-span-1 sm:col-span-3"><label className="label">Phone *</label><input required className="field" value={form.phone} onChange={set('phone')} placeholder="+91 98765 43210" /></div>
-            <div className="col-span-1 sm:col-span-3"><label className="label">Alternate phone</label><input className="field" value={form.altPhone} onChange={set('altPhone')} placeholder="Optional" /></div>
-          </Section>
+            <SectionRow label="First Check In" />
+            <Row label="Check-in Date">
+              <DatePick value={form.checkIn} onChange={setVal('checkIn')} placeholder="Select check-in date" />
+            </Row>
+            <Row label="Check Out Date">
+              <DatePick value={form.checkOut} onChange={setVal('checkOut')} placeholder="Select check-out date" min={form.checkIn} />
+            </Row>
 
-          <Section icon={MapPin} title="Address">
-            <div className="col-span-2 sm:col-span-6"><label className="label">Street address</label><input className="field" value={form.address} onChange={set('address')} placeholder="House / street / area" /></div>
-            <div className="col-span-1 sm:col-span-2"><label className="label">City</label><input className="field" value={form.city} onChange={set('city')} placeholder="City" /></div>
-            <div className="col-span-1 sm:col-span-2"><label className="label">State</label><input className="field" value={form.state} onChange={set('state')} placeholder="State" /></div>
-            <div className="col-span-2 sm:col-span-2"><label className="label">Country</label><input className="field" value={form.country} onChange={set('country')} placeholder="Country" /></div>
-          </Section>
+            <SectionRow label="Re-Check In (If any)" />
+            <Row label="Check-in Date">
+              <DatePick value={form.reCheckIn} onChange={setVal('reCheckIn')} placeholder="Optional" />
+            </Row>
+            <Row label="Check Out Date">
+              <DatePick value={form.reCheckOut} onChange={setVal('reCheckOut')} placeholder="Optional" min={form.reCheckIn} />
+            </Row>
 
-          <Section icon={BedDouble} title="Stay details">
-            <div className="col-span-2 sm:col-span-6">
-              <label className="label">Check-in — Check-out *</label>
-              <DateRange
-                checkIn={form.checkIn}
-                checkOut={form.checkOut}
-                onChange={({ checkIn, checkOut }) => setForm((f) => ({ ...f, checkIn, checkOut }))}
-              />
-            </div>
+            <Row label="Total No. of Nights">
+              <input readOnly value={nights} className="field !bg-surface font-bold" />
+            </Row>
+            <Row label="No. of Adults (12+ Years)">
+              <input type="number" min="0" className="field" value={form.adults} onChange={(e) => setForm((f) => ({ ...f, adults: num(e.target.value) }))} />
+            </Row>
+            <Row label="No. of Rooms">
+              <input type="number" min="0" className="field" value={form.rooms} onChange={(e) => setForm((f) => ({ ...f, rooms: num(e.target.value) }))} />
+            </Row>
+            <Row label="No. Of Extra Beds">
+              <input type="number" min="0" className="field" value={form.extraBeds} onChange={(e) => setForm((f) => ({ ...f, extraBeds: num(e.target.value) }))} />
+            </Row>
+            <Row label="No. of Child with Bed">
+              <input type="number" min="0" className="field" value={form.childWithBed} onChange={(e) => setForm((f) => ({ ...f, childWithBed: num(e.target.value) }))} />
+            </Row>
+            <Row label="No. of Child without Bed" hint="Include ages, e.g. 1 of 7 Years">
+              <input className="field" value={form.childNoBedAges} onChange={set('childNoBedAges')} placeholder="1 of 7 Years" />
+            </Row>
+            <Row label="Room Type">
+              <input className="field" list="ha-room-types" value={form.roomType} onChange={set('roomType')} placeholder="DELUXE ROOM" />
+              <datalist id="ha-room-types">
+                {roomTypes.map((r) => <option key={r._id} value={r.name} />)}
+              </datalist>
+            </Row>
+            <Row label="Meal Plan">
+              <input className="field" list="ha-meal-plans" value={form.mealPlan} onChange={set('mealPlan')} placeholder="MAP (Breakfast + Dinner)" />
+              <datalist id="ha-meal-plans">
+                {mealPlans.map((m) => <option key={m._id} value={`${m.code} (${m.name})`} />)}
+              </datalist>
+            </Row>
+            <Row label="Extra Inclusions">
+              <input className="field" value={form.extraInclusions} onChange={set('extraInclusions')} placeholder="-" />
+            </Row>
+            <Row label="Total Amount Payable To You">
+              <textarea rows="2" className="field resize-none" value={form.totalAmount} onChange={set('totalAmount')}
+                placeholder="INR 2300 X 2 Nights + INR 600 Child without Bed X 2 Nights = INR 5800" />
+            </Row>
+          </div>
 
-            <div className="col-span-2 sm:col-span-2"><label className="label">Rooms</label><input type="number" min="1" className="field" value={form.rooms} onChange={set('rooms')} /></div>
-            <div className="col-span-1 sm:col-span-2"><label className="label">Adults</label><input type="number" min="1" className="field" value={form.adults} onChange={set('adults')} /></div>
-            <div className="col-span-1 sm:col-span-2"><label className="label">Children</label><input type="number" min="0" className="field" value={form.children} onChange={set('children')} /></div>
+          {error && <p className="mx-5 mb-3 rounded-lg bg-red-50 px-3.5 py-2.5 text-[13px] font-medium text-red-700 sm:mx-6">{error}</p>}
 
-            <div className="col-span-1 sm:col-span-3">
-              <label className="label">Room type</label>
-              <select className="field" value={form.roomType} onChange={set('roomType')}>
-                <option value="">Any</option>
-                {roomTypes.map((r) => <option key={r._id} value={r.name}>{r.name}</option>)}
-              </select>
-            </div>
-            <div className="col-span-1 sm:col-span-3">
-              <label className="label">Meal plan</label>
-              <select className="field" value={form.mealPlan} onChange={set('mealPlan')}>
-                <option value="">Any</option>
-                {mealPlans.map((m) => <option key={m._id} value={m.code}>{m.code} — {m.name}</option>)}
-              </select>
-            </div>
-
-            <div className="col-span-2 sm:col-span-6">
-              <label className="label">Special requests</label>
-              <textarea rows="3" className="field resize-none" value={form.message} onChange={set('message')} placeholder="Airport transfer, early check-in, connecting rooms, occasion…" />
-            </div>
-          </Section>
-
-          {error && <p className="col-span-2 rounded-lg bg-red-50 px-3.5 py-2.5 text-[13px] font-medium text-red-700 sm:col-span-6">{error}</p>}
-
-          <div className="col-span-2 flex flex-col-reverse gap-2.5 border-t border-line pt-4 sm:col-span-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="flex items-center gap-1.5 text-[12px] text-ink-500">
-              <ShieldCheck size={14} className="text-emerald-600" /> No payment now — we confirm availability and the final tariff first.
-            </p>
-            <div className="flex flex-col-reverse gap-2.5 sm:flex-row">
-              <button type="button" onClick={closeEnquiry} className="btn-ghost">Cancel</button>
-              <button type="submit" disabled={saving} className="btn-accent font-bold disabled:opacity-60">
-                {saving ? <Loader2 size={16} className="animate-spin" /> : <CalendarCheck size={16} />} Book now
-              </button>
-            </div>
+          <div className="flex flex-col-reverse gap-2.5 border-t border-line px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
+            <button type="button" onClick={closeEnquiry} className="btn-ghost">Cancel</button>
+            <button type="submit" disabled={saving} className="btn-accent font-bold disabled:opacity-60">
+              {saving ? <Loader2 size={16} className="animate-spin" /> : <CalendarCheck size={16} />} Book now
+            </button>
           </div>
         </form>
       </div>
