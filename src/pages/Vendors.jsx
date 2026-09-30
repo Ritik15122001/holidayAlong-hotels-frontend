@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Briefcase, Building2, ChevronDown, Search, Star, Phone, Mail, Globe, MapPin, FileText,
+  Briefcase, Building2, ChevronDown, Search, Star, Phone, Mail, Globe, MapPin, FileText, Landmark,
 } from 'lucide-react';
 import { api } from '../api';
 
@@ -110,6 +110,25 @@ export default function Vendors() {
                     </span>
                   )}
                 </div>
+
+                {[v.bankName, v.accountNumber, v.ifsc, v.upi].some(Boolean) && (
+                  <div className="mt-3 rounded-lg border border-line bg-surface p-3">
+                    <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-500">
+                      <Landmark size={13} className="text-brand-600" /> Account details
+                    </p>
+                    <div className="mt-2 grid gap-1.5 text-[13px] text-ink-700 sm:grid-cols-2">
+                      {[['Bank', v.bankName], ['A/C number', v.accountNumber],
+                        ['IFSC', v.ifsc], ['UPI', v.upi]]
+                        .filter(([, val]) => val)
+                        .map(([label, val]) => (
+                          <span key={label} className="truncate">
+                            <span className="text-ink-500">{label}:</span>{' '}
+                            <span className="font-semibold text-ink-900">{val}</span>
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                )}
 
                 {(v.sectors || []).length > 0 && (
                   <div className="mt-3 flex flex-wrap items-center gap-1.5">
