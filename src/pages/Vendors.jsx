@@ -2,10 +2,79 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Briefcase, Building2, ChevronDown, Search, Star, Phone, Mail, Globe, MapPin, FileText, Landmark,
+  Eye, EyeOff,
 } from 'lucide-react';
 import { api } from '../api';
 
 const TYPES = ['Cab', 'Hotel', 'Flight', 'Bus', 'Activities', 'Cruises', 'Visa', 'Insurance'];
+
+/** Everything but the bank name stays masked until it is asked for. */
+const maskValue = (label, value) => {
+  const s = String(value);
+  if (label === 'UPI') {
+    const [local, domain] = s.split('@');
+    return domain ? `${'\u2022'.repeat(Math.max(4, local.length))}@${domain}` : '\u2022'.repeat(s.length);
+  }
+  if (label === 'IFSC') return s.slice(0, 4) + '\u2022'.repeat(Math.max(4, s.length - 4));
+  return '\u2022'.repeat(Math.max(4, s.length - 4)) + s.slice(-4);
+};
+
+/** Collapsed by default, masked when opened, revealed only on request. */
+function AccountPanel({ vendor }) {
+  const [open, setOpen] = useState(false);
+  const [shown, setShown] = useState(false);
+
+  const rows = [
+    ['Bank', vendor.bankName],
+    ['A/C number', vendor.accountNumber],
+    ['IFSC', vendor.ifsc],
+    ['UPI', vendor.upi],
+  ].filter(([, val]) => val);
+
+  if (!rows.length) return null;
+
+  // re-mask every time the panel is closed, so it never reopens revealed
+  const toggle = () => { setOpen((o) => !o); setShown(false); };
+
+  return (
+    <div className="mt-3 overflow-hidden rounded-lg border border-line">
+      <button onClick={toggle} aria-expanded={open}
+        className="flex w-full items-center justify-between gap-2 bg-surface px-3.5 py-2.5 text-left transition hover:bg-brand-50/60">
+        <span className="flex items-center gap-2 text-[13px] font-bold text-ink-900">
+          <Landmark size={15} className="text-brand-600" /> Account details
+        </span>
+        <ChevronDown size={16} className={`shrink-0 text-ink-400 transition ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="border-t border-line bg-white p-3.5">
+          <div className="mb-2.5 flex items-center justify-between gap-2">
+            <p className="text-[11.5px] text-ink-500">
+              {shown ? 'Visible — take care when sharing your screen.' : 'Hidden for safety. Use the eye to reveal.'}
+            </p>
+            <button onClick={() => setShown((x) => !x)}
+              aria-label={shown ? 'Hide account details' : 'Show account details'}
+              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-line px-2.5 py-1.5 text-[12px] font-semibold text-ink-700 transition hover:border-brand-300 hover:text-brand-700">
+              {shown ? <EyeOff size={14} /> : <Eye size={14} />} {shown ? 'Hide' : 'Show'}
+            </button>
+          </div>
+
+          <div className="grid gap-1.5 text-[13px] sm:grid-cols-2">
+            {rows.map(([label, val]) => (
+              <span key={label} className="truncate">
+                <span className="text-ink-500">{label}:</span>{' '}
+                <span className={`font-semibold text-ink-900 ${shown ? '' : 'tracking-[0.08em]'}`}>
+                  {shown || label === 'Bank' ? val : maskValue(label, val)}
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 export default function Vendors() {
   const [vendors, setVendors] = useState(null);
@@ -111,24 +180,7 @@ export default function Vendors() {
                   )}
                 </div>
 
-                {[v.bankName, v.accountNumber, v.ifsc, v.upi].some(Boolean) && (
-                  <div className="mt-3 rounded-lg border border-line bg-surface p-3">
-                    <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-500">
-                      <Landmark size={13} className="text-brand-600" /> Account details
-                    </p>
-                    <div className="mt-2 grid gap-1.5 text-[13px] text-ink-700 sm:grid-cols-2">
-                      {[['Bank', v.bankName], ['A/C number', v.accountNumber],
-                        ['IFSC', v.ifsc], ['UPI', v.upi]]
-                        .filter(([, val]) => val)
-                        .map(([label, val]) => (
-                          <span key={label} className="truncate">
-                            <span className="text-ink-500">{label}:</span>{' '}
-                            <span className="font-semibold text-ink-900">{val}</span>
-                          </span>
-                        ))}
-                    </div>
-                  </div>
-                )}
+                <AccountPanel vendor={v} />
 
                 {(v.sectors || []).length > 0 && (
                   <div className="mt-3 flex flex-wrap items-center gap-1.5">
