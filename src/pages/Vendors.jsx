@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Briefcase, Building2, ChevronDown, Search, Star } from 'lucide-react';
+import {
+  Briefcase, Building2, ChevronDown, Search, Star, Phone, Mail, Globe, MapPin, FileText,
+} from 'lucide-react';
 import { api } from '../api';
 
 const TYPES = ['Cab', 'Hotel', 'Flight', 'Bus', 'Activities', 'Cruises', 'Visa', 'Insurance'];
@@ -19,7 +21,10 @@ export default function Vendors() {
     const needle = q.trim().toLowerCase();
     return list.filter((v) =>
       (!type || v.vendorType === type) &&
-      (!needle || v.companyName.toLowerCase().includes(needle))
+      (!needle
+        || v.companyName.toLowerCase().includes(needle)
+        || (v.contactPerson || '').toLowerCase().includes(needle)
+        || (v.sectors || []).join(' ').toLowerCase().includes(needle))
     );
   }, [vendors, type, q]);
 
@@ -47,7 +52,7 @@ export default function Vendors() {
           <div className="mt-6 flex flex-wrap items-center gap-2.5">
             <div className="relative min-w-[220px] flex-1 sm:max-w-xs">
               <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400" />
-              <input className="field !pl-10" placeholder="Search company" value={q} onChange={(e) => setQ(e.target.value)} />
+              <input className="field !pl-10" placeholder="Search company, contact or sector" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
             <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
               {['', ...TYPES].map((t) => (
@@ -76,9 +81,44 @@ export default function Vendors() {
             {shown.map((v) => (
               <article key={v._id} className="card p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h2 className="min-w-0 text-[17px] font-extrabold text-ink-900">{v.companyName}</h2>
+                  <div className="min-w-0">
+                    <h2 className="text-[17px] font-extrabold text-ink-900">{v.companyName}</h2>
+                    {v.contactPerson && <p className="mt-0.5 text-[13px] text-ink-500">{v.contactPerson}</p>}
+                  </div>
                   <span className="shrink-0 rounded-lg bg-brand-50 px-2.5 py-1 text-[11.5px] font-bold text-brand-700">{v.vendorType}</span>
                 </div>
+
+                <div className="mt-3.5 grid gap-2 text-[13px] text-ink-700 sm:grid-cols-2">
+                  {(v.phones || []).map((p) => (
+                    <a key={p} href={`tel:${p}`} className="flex items-center gap-2 hover:text-brand-700">
+                      <Phone size={14} className="shrink-0 text-brand-600" /> {p}
+                    </a>
+                  ))}
+                  {(v.emails || []).map((e) => (
+                    <a key={e} href={`mailto:${e}`} className="flex items-center gap-2 truncate hover:text-brand-700">
+                      <Mail size={14} className="shrink-0 text-brand-600" /> {e}
+                    </a>
+                  ))}
+                  {v.website && (
+                    <a href={v.website} target="_blank" rel="noreferrer" className="flex items-center gap-2 truncate hover:text-brand-700">
+                      <Globe size={14} className="shrink-0 text-brand-600" /> {v.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                    </a>
+                  )}
+                  {v.gstPan && (
+                    <span className="flex items-center gap-2">
+                      <FileText size={14} className="shrink-0 text-brand-600" /> GST / PAN: {v.gstPan}
+                    </span>
+                  )}
+                </div>
+
+                {(v.sectors || []).length > 0 && (
+                  <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                    <MapPin size={14} className="shrink-0 text-ink-400" />
+                    {v.sectors.map((sec) => (
+                      <span key={sec} className="rounded-md bg-surface px-2 py-1 text-[11.5px] font-semibold text-ink-700">{sec}</span>
+                    ))}
+                  </div>
+                )}
 
                 <button onClick={() => toggle(v)}
                   className="mt-3.5 flex w-full items-center justify-between rounded-lg border border-line px-3.5 py-2.5 text-[13px] font-bold text-ink-900 transition hover:border-brand-300">
