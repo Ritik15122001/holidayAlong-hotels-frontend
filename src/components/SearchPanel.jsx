@@ -27,9 +27,9 @@ export default function SearchPanel() {
   const COUNTERS = [
     ['rooms', 'Rooms', 1, ''],
     ['adults', 'Adults', 1, '12+ years'],
-    ['extraBeds', 'Extra beds', 0, 'Charged per bed, per night'],
-    ['cwb', 'Children with bed', 0, 'CWB'],
-    ['cnb', 'Children without bed', 0, 'CNB'],
+    ['extraBeds', 'Extra beds', 0, 'Per bed, per night'],
+    ['cwb', 'Child with bed', 0, 'CWB'],
+    ['cnb', 'Child without bed', 0, 'CNB'],
   ];
 
   return (
@@ -64,14 +64,14 @@ export default function SearchPanel() {
           {guestsOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setGuestsOpen(false)} />
-              <div className="absolute left-0 right-0 top-full z-40 mt-1.5 space-y-3.5 rounded-xl border border-line bg-white p-4 shadow-panel">
+              <div className="absolute right-0 top-full z-40 mt-1.5 w-[300px] max-w-[calc(100vw-2rem)] space-y-3 rounded-xl border border-line bg-white p-4 text-left shadow-panel">
                 {COUNTERS.map(([key, label, min, hint]) => (
-                  <div key={key} className="flex items-center justify-between gap-3">
-                    <span className="min-w-0">
-                      <span className="block text-sm font-semibold text-ink-700">{label}</span>
-                      {hint && <span className="block text-[11px] text-ink-400">{hint}</span>}
+                  <div key={key} className="flex items-center justify-between gap-2">
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[13.5px] font-semibold leading-tight text-ink-700">{label}</span>
+                      {hint && <span className="mt-0.5 block text-[11px] leading-tight text-ink-400">{hint}</span>}
                     </span>
-                    <div className="flex shrink-0 items-center gap-3">
+                    <div className="flex shrink-0 items-center gap-2.5">
                       <Stepper onClick={() => setFilter({ [key]: Math.max(min, filters[key] - 1) })}>−</Stepper>
                       <span className="w-5 text-center text-sm font-bold">{filters[key]}</span>
                       <Stepper onClick={() => setFilter({ [key]: filters[key] + 1 })}>+</Stepper>

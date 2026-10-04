@@ -41,10 +41,10 @@ export default function Filters() {
       <Group title="Rooms & guests">
         <div className="space-y-2.5">
           {[['rooms', 'Rooms', 1], ['adults', 'Adults', 1], ['extraBeds', 'Extra beds', 0],
-            ['cwb', 'Children with bed (CWB)', 0], ['cnb', 'Children without bed (CNB)', 0]].map(([key, label, min]) => (
-            <div key={key} className="flex items-center justify-between gap-3">
-              <span className="text-[13px] text-ink-700">{label}</span>
-              <div className="flex shrink-0 items-center gap-2.5">
+            ['cwb', 'Child with bed', 0], ['cnb', 'Child without bed', 0]].map(([key, label, min]) => (
+            <div key={key} className="flex items-center justify-between gap-2">
+              <span className="min-w-0 flex-1 text-[13px] leading-tight text-ink-700">{label}</span>
+              <div className="flex shrink-0 items-center gap-2">
                 <Step onClick={() => setFilter({ [key]: Math.max(min, filters[key] - 1) })}>−</Step>
                 <span className="w-4 text-center text-[13px] font-bold text-ink-900">{filters[key]}</span>
                 <Step onClick={() => setFilter({ [key]: filters[key] + 1 })}>+</Step>
