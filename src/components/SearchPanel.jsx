@@ -33,7 +33,7 @@ export default function SearchPanel() {
   ];
 
   return (
-    <div className="rounded-2xl border border-white/60 bg-white p-2.5 shadow-panel sm:p-3">
+    <div className="rounded-2xl border border-white/60 bg-white p-2.5 text-left shadow-panel sm:p-3">
       <form onSubmit={submit} className="grid grid-cols-2 gap-2 lg:grid-cols-[1.4fr_1.5fr_1.2fr_auto]">
         <Field icon={MapPin} label="Destination" className="col-span-2 lg:col-span-1">
           <Autocomplete
