@@ -61,8 +61,17 @@ export default function HotelCard({ hotel, horizontal = false }) {
                   {money(hotel.quote.total, hotel.quote.currency)}
                 </p>
                 <p className="text-[11px] text-ink-400">
-                  {money(hotel.quote.perNight, hotel.quote.currency)} per night · excl. taxes
+                  {hotel.quote.seasonal
+                    ? hotel.quote.segments.map((s) => `${s.nights}N × ${money(s.rate, hotel.quote.currency)}`).join(' + ')
+                    : `${money(hotel.quote.perNight, hotel.quote.currency)} per night`}
+                  {' · excl. taxes'}
                 </p>
+              </>
+            ) : hotel.noRateForDates ? (
+              <>
+                <p className="text-[10.5px] font-semibold uppercase tracking-wide text-ink-400">These dates</p>
+                <p className="text-[17px] font-extrabold leading-tight text-ink-900">Rate on request</p>
+                <p className="text-[11px] text-ink-400">No tariff loaded for your dates</p>
               </>
             ) : (
               <>
