@@ -32,9 +32,13 @@ export default function BookingModal() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
+  const [options, setOptions] = useState([]);
+
   // every field starts empty — nothing is guessed for the user
   const [form, setForm] = useState({
     name: '',
+    city: '',
+    vendorId: '',
     hotelName: '',
     checkIn: '',
     checkOut: '',
@@ -52,6 +56,17 @@ export default function BookingModal() {
   });
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { api.bookingOptions().then(setOptions).catch(() => setOptions([])); }, []);
+
+  // opened from a hotel page or card: preselect that hotel's city, vendor and name
+  useEffect(() => {
+    if (!context?.hotelId || !options.length) return;
+    const match = options.find((o) => o._id === String(context.hotelId));
+    if (!match) return;
+    setForm((f) => (f.hotelName ? f : {
+      ...f, city: match.city, vendorId: match.vendorId || '', hotelName: match.name,
+    }));
+  }, [context?.hotelId, options]);
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && closeEnquiry();
     document.addEventListener('keydown', onKey);
@@ -61,6 +76,30 @@ export default function BookingModal() {
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
   const setVal = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const cities = useMemo(
+    () => [...new Set(options.map((o) => o.city).filter(Boolean))].sort(),
+    [options],
+  );
+
+  // vendors that actually supply the chosen city; empty means skip the step
+  const cityVendors = useMemo(() => {
+    const seen = new Map();
+    for (const o of options) {
+      if (o.city === form.city && o.vendorId) seen.set(o.vendorId, o.vendorName || 'Vendor');
+    }
+    return [...seen].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [options, form.city]);
+
+  // hotels in the chosen city, narrowed to the vendor once one is picked
+  const cityHotels = useMemo(
+    () => options.filter((o) => o.city === form.city && (!form.vendorId || o.vendorId === form.vendorId)),
+    [options, form.city, form.vendorId],
+  );
+
+  // changing the city or vendor invalidates anything chosen below it
+  const pickCity = (e) => setForm((f) => ({ ...f, city: e.target.value, vendorId: '', hotelName: '' }));
+  const pickVendor = (e) => setForm((f) => ({ ...f, vendorId: e.target.value, hotelName: '' }));
 
   // total nights across both stays, same as the server works it out
   const nights = useMemo(() => {
@@ -117,8 +156,33 @@ export default function BookingModal() {
             <Row label="Guest Name">
               <input required className="field" value={form.name} onChange={set('name')} placeholder="Mrs. Rikta Zamindar" />
             </Row>
-            <Row label="Hotel Name">
-              <input className="field" value={form.hotelName} onChange={set('hotelName')} placeholder="Hotel name, city" />
+            <Row label="City">
+              <select className="field" value={form.city} onChange={pickCity}>
+                <option value="">Select a city</option>
+                {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </Row>
+
+            {cityVendors.length > 0 && (
+              <Row label="Vendor" hint="Optional — narrows the hotel list to one supplier.">
+                <select className="field" value={form.vendorId} onChange={pickVendor}>
+                  <option value="">All vendors in {form.city}</option>
+                  {cityVendors.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+                </select>
+              </Row>
+            )}
+
+            <Row label="Hotel Name"
+              hint={form.city && cityHotels.length === 0 ? 'No hotels listed for that selection — type the name instead.' : undefined}>
+              {form.city && cityHotels.length > 0 ? (
+                <select className="field" value={form.hotelName} onChange={set('hotelName')}>
+                  <option value="">Select a hotel</option>
+                  {cityHotels.map((h) => <option key={h._id} value={h.name}>{h.name}</option>)}
+                </select>
+              ) : (
+                <input className="field" value={form.hotelName} onChange={set('hotelName')}
+                  placeholder={form.city ? 'Hotel name' : 'Select a city first, or type the hotel name'} />
+              )}
             </Row>
 
             <SectionRow label="First Check In" />

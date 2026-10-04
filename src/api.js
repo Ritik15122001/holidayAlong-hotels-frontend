@@ -37,6 +37,7 @@ export const api = {
   amenities: () => req('/amenities'),
   vendors: (type) => req('/vendors' + (type ? `?type=${type}` : '')),
   vendorHotels: (id) => req(`/vendors/${id}/hotels`),
+  bookingOptions: () => req('/booking-options'),
   locations: (city) => req('/locations' + (city ? `?city=${city}` : '')),
   createLead: (body) => req('/leads', { method: 'POST', body }),
   login: (body) => req('/auth/login', { method: 'POST', body }),
