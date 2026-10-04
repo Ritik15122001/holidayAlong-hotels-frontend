@@ -16,7 +16,21 @@ export default function SearchPanel() {
 
   const submit = (e) => { e.preventDefault(); navigate('/hotels'); };
 
-  const guestLabel = `${filters.rooms} Room${filters.rooms > 1 ? 's' : ''}, ${filters.adults} Adult${filters.adults > 1 ? 's' : ''}${filters.children ? `, ${filters.children} Child` : ''}`;
+  const kids = filters.cwb + filters.cnb;
+  const guestLabel = [
+    `${filters.rooms} Room${filters.rooms > 1 ? 's' : ''}`,
+    `${filters.adults} Adult${filters.adults > 1 ? 's' : ''}`,
+    kids ? `${kids} Child${kids > 1 ? 'ren' : ''}` : '',
+    filters.extraBeds ? `${filters.extraBeds} Extra bed${filters.extraBeds > 1 ? 's' : ''}` : '',
+  ].filter(Boolean).join(', ');
+
+  const COUNTERS = [
+    ['rooms', 'Rooms', 1, ''],
+    ['adults', 'Adults', 1, '12+ years'],
+    ['extraBeds', 'Extra beds', 0, 'Charged per bed, per night'],
+    ['cwb', 'Children with bed', 0, 'CWB'],
+    ['cnb', 'Children without bed', 0, 'CNB'],
+  ];
 
   return (
     <div className="rounded-2xl border border-white/60 bg-white p-2.5 shadow-panel sm:p-3">
@@ -51,10 +65,13 @@ export default function SearchPanel() {
             <>
               <div className="fixed inset-0 z-10" onClick={() => setGuestsOpen(false)} />
               <div className="absolute left-0 right-0 top-full z-40 mt-1.5 space-y-3.5 rounded-xl border border-line bg-white p-4 shadow-panel">
-                {[['rooms', 'Rooms', 1], ['adults', 'Adults', 1], ['children', 'Children', 0]].map(([key, label, min]) => (
-                  <div key={key} className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-ink-700">{label}</span>
-                    <div className="flex items-center gap-3">
+                {COUNTERS.map(([key, label, min, hint]) => (
+                  <div key={key} className="flex items-center justify-between gap-3">
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold text-ink-700">{label}</span>
+                      {hint && <span className="block text-[11px] text-ink-400">{hint}</span>}
+                    </span>
+                    <div className="flex shrink-0 items-center gap-3">
                       <Stepper onClick={() => setFilter({ [key]: Math.max(min, filters[key] - 1) })}>−</Stepper>
                       <span className="w-5 text-center text-sm font-bold">{filters[key]}</span>
                       <Stepper onClick={() => setFilter({ [key]: filters[key] + 1 })}>+</Stepper>

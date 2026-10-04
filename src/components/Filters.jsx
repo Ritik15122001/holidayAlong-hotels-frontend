@@ -38,6 +38,23 @@ export default function Filters() {
         </div>
       </Group>
 
+      <Group title="Rooms & guests">
+        <div className="space-y-2.5">
+          {[['rooms', 'Rooms', 1], ['adults', 'Adults', 1], ['extraBeds', 'Extra beds', 0],
+            ['cwb', 'Children with bed (CWB)', 0], ['cnb', 'Children without bed (CNB)', 0]].map(([key, label, min]) => (
+            <div key={key} className="flex items-center justify-between gap-3">
+              <span className="text-[13px] text-ink-700">{label}</span>
+              <div className="flex shrink-0 items-center gap-2.5">
+                <Step onClick={() => setFilter({ [key]: Math.max(min, filters[key] - 1) })}>−</Step>
+                <span className="w-4 text-center text-[13px] font-bold text-ink-900">{filters[key]}</span>
+                <Step onClick={() => setFilter({ [key]: filters[key] + 1 })}>+</Step>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-2.5 text-[11.5px] text-ink-400">Prices below are the total for this party across your dates.</p>
+      </Group>
+
       <Group title="Price per night">
         <div className="flex items-center gap-2">
           <input type="number" min="0" className="field" placeholder="Min" value={filters.minPrice} onChange={(e) => setFilter({ minPrice: e.target.value })} />
@@ -93,4 +110,8 @@ const Check = ({ checked, onChange, label }) => (
     <input type="checkbox" checked={checked} onChange={onChange} className="h-4 w-4 rounded border-line accent-brand-600" />
     {label}
   </label>
+);
+
+const Step = ({ children, onClick }) => (
+  <button type="button" onClick={onClick} className="grid h-6 w-6 place-items-center rounded-md border border-line text-[13px] text-ink-700 transition hover:border-brand-400 hover:text-brand-700">{children}</button>
 );

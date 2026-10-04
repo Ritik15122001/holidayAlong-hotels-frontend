@@ -5,7 +5,8 @@ const today = new Date();
 const plus = (n) => new Date(today.getTime() + n * 864e5).toISOString().slice(0, 10);
 
 export const emptyFilters = {
-  q: '', checkIn: plus(7), checkOut: plus(9), rooms: 1, adults: 2, children: 0,
+  q: '', checkIn: plus(7), checkOut: plus(9), rooms: 1, adults: 2,
+  extraBeds: 0, cwb: 0, cnb: 0,
   stars: [], minPrice: '', maxPrice: '', roomType: [], mealPlan: [], rating: '', sort: '',
 };
 
@@ -29,11 +30,14 @@ export const useSearch = create((set, get) => ({
     const { filters, page } = get();
     set({ loading: true, error: '' });
     try {
+      // the party and the dates drive the quote, so they go to the API too
+      const party = ['checkIn', 'checkOut', 'rooms', 'adults', 'extraBeds', 'cwb', 'cnb'];
       const params = { page, limit: 8 };
       for (const [k, v] of Object.entries(filters)) {
-        if (['checkIn', 'checkOut', 'rooms', 'adults', 'children'].includes(k)) continue;
+        if (party.includes(k)) continue;
         if (Array.isArray(v) ? v.length : v !== '' && v != null) params[k] = Array.isArray(v) ? v.join(',') : v;
       }
+      for (const k of party) if (filters[k]) params[k] = filters[k];
       const res = await api.hotels(params);
       set({ hotels: res.data, total: res.total, pages: res.pages, loading: false });
     } catch (e) {

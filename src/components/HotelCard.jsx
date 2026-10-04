@@ -52,11 +52,27 @@ export default function HotelCard({ hotel, horizontal = false }) {
 
         <div className={`mt-auto flex flex-wrap items-end justify-between gap-2.5 border-t border-line pt-3 ${horizontal ? '' : 'pt-3'}`}>
           <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-wide text-ink-400">Starting from</p>
-            <p className="text-[20px] font-extrabold leading-tight text-ink-900">
-              {hotel.startingPrice ? money(hotel.startingPrice, hotel.currency) : 'On request'}
-            </p>
-            <p className="text-[11px] text-ink-400">per night · double · excl. taxes</p>
+            {hotel.quote ? (
+              <>
+                <p className="text-[10.5px] font-semibold uppercase tracking-wide text-ink-400">
+                  Total for {hotel.quote.nights} night{hotel.quote.nights > 1 ? 's' : ''}
+                </p>
+                <p className="text-[20px] font-extrabold leading-tight text-ink-900">
+                  {money(hotel.quote.total, hotel.quote.currency)}
+                </p>
+                <p className="text-[11px] text-ink-400">
+                  {money(hotel.quote.perNight, hotel.quote.currency)} per night · excl. taxes
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-[10.5px] font-semibold uppercase tracking-wide text-ink-400">Starting from</p>
+                <p className="text-[20px] font-extrabold leading-tight text-ink-900">
+                  {hotel.startingPrice ? money(hotel.startingPrice, hotel.currency) : 'On request'}
+                </p>
+                <p className="text-[11px] text-ink-400">per night · double · excl. taxes</p>
+              </>
+            )}
           </div>
           <div className="flex items-center gap-1.5">
             <Link to={`/hotels/${hotel._id}`} className="btn-outline !px-3 !py-2.5 !text-[13px]">Details</Link>
