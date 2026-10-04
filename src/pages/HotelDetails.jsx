@@ -14,7 +14,7 @@ import { api, money } from '../api';
 import CtaBar from '../components/CtaBar.jsx';
 import { iconFor } from '../lib/icons.js';
 import { starsOf } from '../lib/categories.js';
-import { useEnquiry } from '../store/useStore';
+import { useEnquiry, useSearch } from '../store/useStore';
 
 /** Icon per amenity comes from the amenity master; falls back to a generic one. */
 
@@ -58,12 +58,34 @@ export default function HotelDetails() {
   const [lightbox, setLightbox] = useState(-1);
   const [faq, setFaq] = useState(0);
   const openEnquiry = useEnquiry((s) => s.openEnquiry);
+  const filters = useSearch((s) => s.filters);
+
+  // the same party and dates the search card was priced on, so the figure
+  // here matches the one that was clicked
+  const quoteParams = useMemo(() => ({
+    checkIn: filters.checkIn,
+    checkOut: filters.checkOut,
+    rooms: filters.rooms,
+    adults: filters.adults,
+    extraBeds: filters.extraBeds,
+    cwb: filters.cwb,
+    cnb: filters.cnb,
+  }), [filters.checkIn, filters.checkOut, filters.rooms, filters.adults,
+    filters.extraBeds, filters.cwb, filters.cnb]);
+
+  const partyLabel = useMemo(() => [
+    `${filters.rooms} room${filters.rooms > 1 ? 's' : ''}`,
+    `${filters.adults} adult${filters.adults > 1 ? 's' : ''}`,
+    filters.extraBeds ? `${filters.extraBeds} extra bed${filters.extraBeds > 1 ? 's' : ''}` : '',
+    filters.cwb ? `${filters.cwb} CWB` : '',
+    filters.cnb ? `${filters.cnb} CNB` : '',
+  ].filter(Boolean).join(', '), [filters.rooms, filters.adults, filters.extraBeds, filters.cwb, filters.cnb]);
 
   useEffect(() => {
     let live = true;
     setHotel(null); setPrices([]); setSimilar([]);
     if (!window.location.hash) window.scrollTo(0, 0);
-    api.hotel(id)
+    api.hotel(id, quoteParams)
       .then(async (h) => {
         if (!live) return;
         setHotel(h);
@@ -87,7 +109,7 @@ export default function HotelDetails() {
       })
       .catch((e) => live && setError(e.message));
     return () => { live = false; };
-  }, [id]);
+  }, [id, quoteParams]);
 
   useEffect(() => {
     if (lightbox < 0) return;
@@ -333,11 +355,41 @@ export default function HotelDetails() {
 
         <aside className="lg:sticky lg:top-[120px] lg:self-start">
           <div className="card p-5">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-400">Starting from</p>
-            <p className="text-[26px] font-extrabold leading-tight text-ink-900">
-              {cheapest ? money(cheapest.doublePrice, cheapest.currency) : 'On request'}
-            </p>
-            {cheapest && <p className="mt-0.5 text-[12px] text-ink-500">{cheapest.roomTypeId?.name} · {cheapest.mealPlanId?.code} · double occupancy</p>}
+            {hotel.quote ? (
+              <>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-400">
+                  Total for {hotel.quote.nights} night{hotel.quote.nights > 1 ? 's' : ''}
+                </p>
+                <p className="text-[26px] font-extrabold leading-tight text-ink-900">
+                  {money(hotel.quote.total, hotel.quote.currency)}
+                </p>
+                <p className="mt-0.5 text-[12px] text-ink-500">
+                  {[hotel.quote.roomType, hotel.quote.mealPlan].filter(Boolean).join(' · ')}
+                  {hotel.quote.roomType || hotel.quote.mealPlan ? ' · ' : ''}
+                  {partyLabel}
+                </p>
+                <p className="mt-0.5 text-[12px] text-ink-400">
+                  {hotel.quote.seasonal
+                    ? hotel.quote.segments.map((x) => `${x.nights}N × ${money(x.rate, hotel.quote.currency)}`).join(' + ')
+                    : `${money(hotel.quote.perNight, hotel.quote.currency)} per night`}
+                  {' · excl. taxes'}
+                </p>
+              </>
+            ) : hotel.noRateForDates ? (
+              <>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-400">These dates</p>
+                <p className="text-[22px] font-extrabold leading-tight text-ink-900">Rate on request</p>
+                <p className="mt-0.5 text-[12px] text-ink-500">No tariff loaded for {partyLabel}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-400">Starting from</p>
+                <p className="text-[26px] font-extrabold leading-tight text-ink-900">
+                  {cheapest ? money(cheapest.doublePrice, cheapest.currency) : 'On request'}
+                </p>
+                {cheapest && <p className="mt-0.5 text-[12px] text-ink-500">{cheapest.roomTypeId?.name} · {cheapest.mealPlanId?.code} · double occupancy</p>}
+              </>
+            )}
             <CtaBar variant="stack" className="mt-4" context={{ hotelId: hotel._id, hotelName: hotel.name }} waText={waText} />
           </div>
         </aside>
@@ -475,8 +527,14 @@ export default function HotelDetails() {
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white p-3 lg:hidden">
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] text-ink-400">Starting from</p>
-            <p className="truncate text-[18px] font-extrabold text-ink-900">{cheapest ? money(cheapest.doublePrice, cheapest.currency) : 'On request'}</p>
+            <p className="text-[11px] text-ink-400">
+              {hotel.quote ? `Total for ${hotel.quote.nights} night${hotel.quote.nights > 1 ? 's' : ''}` : 'Starting from'}
+            </p>
+            <p className="truncate text-[18px] font-extrabold text-ink-900">
+              {hotel.quote ? money(hotel.quote.total, hotel.quote.currency)
+                : hotel.noRateForDates ? 'On request'
+                : cheapest ? money(cheapest.doublePrice, cheapest.currency) : 'On request'}
+            </p>
           </div>
           <button onClick={() => enquire()} className="btn-accent !px-5 !py-3 font-bold uppercase tracking-wide">Book now</button>
         </div>

@@ -25,7 +25,7 @@ async function req(path, options = {}) {
 
 export const api = {
   hotels: (params) => req('/hotels?' + new URLSearchParams(params)),
-  hotel: (id) => req(`/hotels/${id}`),
+  hotel: (id, p) => req(`/hotels/${id}` + (p && Object.keys(p).length ? `?${new URLSearchParams(p)}` : '')),
   prices: (id) => req(`/hotels/${id}/prices`),
   googleRating: (id) => req(`/hotels/${id}/google-rating`),
   roomTypes: () => req('/room-types'),
