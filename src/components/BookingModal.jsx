@@ -154,7 +154,7 @@ export default function BookingModal() {
         <form onSubmit={submit}>
           <div className="m-5 overflow-hidden rounded-xl border border-line sm:m-6">
             <Row label="Guest Name">
-              <input required className="field" value={form.name} onChange={set('name')} placeholder="Mrs. Rikta Zamindar" />
+              <input required className="field" value={form.name} onChange={set('name')} placeholder="Enter guest name" />
             </Row>
             <Row label="City">
               <select className="field" value={form.city} onChange={pickCity}>
@@ -217,16 +217,16 @@ export default function BookingModal() {
               <input type="number" min="0" className="field" placeholder="0" value={form.childWithBed} onChange={(e) => setForm((f) => ({ ...f, childWithBed: num(e.target.value) }))} />
             </Row>
             <Row label="No. of Child without Bed" hint="Include ages, e.g. 1 of 7 Years">
-              <input className="field" value={form.childNoBedAges} onChange={set('childNoBedAges')} placeholder="1 of 7 Years" />
+              <input className="field" value={form.childNoBedAges} onChange={set('childNoBedAges')} placeholder="e.g. 1 of 7 years" />
             </Row>
             <Row label="Room Type">
-              <input className="field" list="ha-room-types" value={form.roomType} onChange={set('roomType')} placeholder="DELUXE ROOM" />
+              <input className="field" list="ha-room-types" value={form.roomType} onChange={set('roomType')} placeholder="Select or type a room type" />
               <datalist id="ha-room-types">
                 {roomTypes.map((r) => <option key={r._id} value={r.name} />)}
               </datalist>
             </Row>
             <Row label="Meal Plan">
-              <input className="field" list="ha-meal-plans" value={form.mealPlan} onChange={set('mealPlan')} placeholder="MAP (Breakfast + Dinner)" />
+              <input className="field" list="ha-meal-plans" value={form.mealPlan} onChange={set('mealPlan')} placeholder="Select or type a meal plan" />
               <datalist id="ha-meal-plans">
                 {mealPlans.map((m) => <option key={m._id} value={`${m.code} (${m.name})`} />)}
               </datalist>
@@ -236,7 +236,7 @@ export default function BookingModal() {
             </Row>
             <Row label="Total Amount Payable To You">
               <textarea rows="2" className="field resize-none" value={form.totalAmount} onChange={set('totalAmount')}
-                placeholder="INR 2300 X 2 Nights + INR 600 Child without Bed X 2 Nights = INR 5800" />
+                placeholder="e.g. INR 2300 x 2 nights = INR 4600" />
             </Row>
           </div>
 
