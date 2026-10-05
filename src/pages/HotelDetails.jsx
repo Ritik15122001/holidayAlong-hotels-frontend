@@ -15,6 +15,7 @@ import CtaBar from '../components/CtaBar.jsx';
 import { iconFor } from '../lib/icons.js';
 import { starsOf } from '../lib/categories.js';
 import { useEnquiry, useSearch } from '../store/useStore';
+import DateRange from '../components/DateRange.jsx';
 
 /** Icon per amenity comes from the amenity master; falls back to a generic one. */
 
@@ -59,6 +60,7 @@ export default function HotelDetails() {
   const [faq, setFaq] = useState(0);
   const openEnquiry = useEnquiry((s) => s.openEnquiry);
   const filters = useSearch((s) => s.filters);
+  const setFilter = useSearch((s) => s.setFilter);
 
   // the same party and dates the search card was priced on, so the figure
   // here matches the one that was clicked
@@ -135,8 +137,11 @@ export default function HotelDetails() {
       if (p.adultExtraBedPrice > 0) cur.extraBed = true;
       m.set(k, cur);
     }
-    return [...m.values()].map((r) => ({ ...r, plans: [...r.plans] })).sort((a, b) => a.min - b.min);
-  }, [prices]);
+    const quoteByRoom = new Map((hotel?.roomQuotes || []).map((x) => [x.roomType, x.quote]));
+    return [...m.values()]
+      .map((r) => ({ ...r, plans: [...r.plans], quote: quoteByRoom.get(r.name) || null }))
+      .sort((a, b) => (a.quote?.total ?? a.min) - (b.quote?.total ?? b.min));
+  }, [prices, hotel]);
 
   const mealPlans = useMemo(() => {
     const order = ['EP', 'CP', 'MAP', 'AP'];
@@ -274,7 +279,9 @@ export default function HotelDetails() {
 
           {/* ROOMS */}
           {rooms.length > 0 && (
-            <Block id="rooms" title="Rooms at this hotel" sub="Indicative lead-in rates per night for two adults. Final tariff is confirmed for your dates.">
+            <Block id="rooms" title="Rooms at this hotel" sub={hotel.roomQuotes?.some((x) => x.quote)
+              ? `Totals for ${partyLabel} across your dates. Final tariff is confirmed with the hotel.`
+              : 'Indicative lead-in rates per night for two adults. Final tariff is confirmed for your dates.'}>
               <div className="space-y-3">
                 {rooms.map((r) => (
                   <div key={r.name} className="rounded-xl border border-line p-4 transition hover:border-brand-200 hover:shadow-card">
@@ -297,9 +304,33 @@ export default function HotelDetails() {
                       </div>
                       <div className="flex w-full shrink-0 items-center justify-between gap-2 border-t border-line pt-3 sm:w-auto sm:flex-col sm:items-end sm:border-0 sm:pt-0">
                         <div className="text-left sm:text-right">
-                          <p className="text-[11px] text-ink-400">From</p>
-                          <p className="text-[20px] font-extrabold leading-tight text-ink-900">{Number.isFinite(r.min) ? money(r.min, r.currency) : 'On request'}</p>
-                          <p className="text-[11px] text-ink-400">per night</p>
+                          {r.quote ? (
+                            <>
+                              <p className="text-[11px] text-ink-400">
+                                Total for {r.quote.nights} night{r.quote.nights > 1 ? 's' : ''}
+                              </p>
+                              <p className="text-[20px] font-extrabold leading-tight text-ink-900">
+                                {money(r.quote.total, r.quote.currency)}
+                              </p>
+                              <p className="text-[11px] text-ink-400">
+                                {r.quote.seasonal
+                                  ? r.quote.segments.map((x) => `${x.nights}N × ${money(x.rate, r.quote.currency)}`).join(' + ')
+                                  : `${money(r.quote.perNight, r.quote.currency)} per night`}
+                              </p>
+                            </>
+                          ) : hotel.noRateForDates ? (
+                            <>
+                              <p className="text-[11px] text-ink-400">These dates</p>
+                              <p className="text-[16px] font-extrabold leading-tight text-ink-900">On request</p>
+                              <p className="text-[11px] text-ink-400">No tariff loaded</p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-[11px] text-ink-400">From</p>
+                              <p className="text-[20px] font-extrabold leading-tight text-ink-900">{Number.isFinite(r.min) ? money(r.min, r.currency) : 'On request'}</p>
+                              <p className="text-[11px] text-ink-400">per night</p>
+                            </>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           <button onClick={() => enquire({ roomType: r.name, mealPlan: r.plans[0] })} className="btn-accent !px-4 !py-2 !text-[13px]">Book now</button>
@@ -390,6 +421,26 @@ export default function HotelDetails() {
                 {cheapest && <p className="mt-0.5 text-[12px] text-ink-500">{cheapest.roomTypeId?.name} · {cheapest.mealPlanId?.code} · double occupancy</p>}
               </>
             )}
+            <div className="mt-4 rounded-xl border border-line p-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-400">Your dates</p>
+              <div className="mt-1.5">
+                <DateRange checkIn={filters.checkIn} checkOut={filters.checkOut} onChange={setFilter} compact />
+              </div>
+              <div className="mt-3 space-y-2 border-t border-line pt-3">
+                {[['rooms', 'Rooms', 1], ['adults', 'Adults', 1], ['extraBeds', 'Extra beds', 0],
+                  ['cwb', 'Child with bed', 0], ['cnb', 'Child without bed', 0]].map(([key, label, min]) => (
+                  <div key={key} className="flex items-center justify-between gap-2">
+                    <span className="min-w-0 flex-1 text-[13px] text-ink-700">{label}</span>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <Step onClick={() => setFilter({ [key]: Math.max(min, filters[key] - 1) })}>−</Step>
+                      <span className="w-4 text-center text-[13px] font-bold text-ink-900">{filters[key]}</span>
+                      <Step onClick={() => setFilter({ [key]: filters[key] + 1 })}>+</Step>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <CtaBar variant="stack" className="mt-4" context={{ hotelId: hotel._id, hotelName: hotel.name }} waText={waText} />
           </div>
         </aside>
@@ -580,4 +631,9 @@ const Highlight = ({ icon: Icon, title, sub }) => (
       <p className="truncate text-[12px] text-ink-500">{sub}</p>
     </div>
   </div>
+);
+
+const Step = ({ children, onClick }) => (
+  <button type="button" onClick={onClick}
+    className="grid h-6 w-6 place-items-center rounded-md border border-line text-[13px] text-ink-700 transition hover:border-brand-400 hover:text-brand-700">{children}</button>
 );
