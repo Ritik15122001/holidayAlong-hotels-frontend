@@ -8,6 +8,15 @@ import { api } from '../api';
  */
 const slug = (t) => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
+/** Readable text for the clipboard — the markup itself is no use to anyone. */
+const asPlainText = (html = '') => {
+  const el = document.createElement('div');
+  el.innerHTML = String(html)
+    .replace(/<\/(p|div|li|h[1-6]|blockquote|tr)>/gi, '</$1>\n')
+    .replace(/<br\s*\/?>/gi, '\n');
+  return (el.textContent || '').replace(/\n{3,}/g, '\n\n').trim();
+};
+
 export default function Formats() {
   const [templates, setTemplates] = useState(null);
   const [copied, setCopied] = useState('');
@@ -22,7 +31,7 @@ export default function Formats() {
 
   const copy = async (t) => {
     try {
-      await navigator.clipboard.writeText(t.body);
+      await navigator.clipboard.writeText(t.bodyFormat === 'html' ? asPlainText(t.body) : t.body);
       setCopied(t.id);
       setTimeout(() => setCopied(''), 1600);
     } catch { /* clipboard unavailable */ }
@@ -85,7 +94,12 @@ export default function Formats() {
                   {copied === t.id ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy</>}
                 </button>
               </div>
-              <pre className="mt-3.5 whitespace-pre-wrap break-words rounded-xl bg-surface p-4 font-sans text-[13.5px] leading-relaxed text-ink-700">{t.body}</pre>
+              {t.bodyFormat === 'html' ? (
+                <div className="prose-format mt-3.5 rounded-xl bg-surface p-4 text-[13.5px] leading-relaxed text-ink-700"
+                  dangerouslySetInnerHTML={{ __html: t.body }} />
+              ) : (
+                <pre className="mt-3.5 whitespace-pre-wrap break-words rounded-xl bg-surface p-4 font-sans text-[13.5px] leading-relaxed text-ink-700">{t.body}</pre>
+              )}
             </article>
           ))}
         </div>
